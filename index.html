@@ -4,768 +4,549 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MATRIX // BONZI EDITION</title>
-
+<title>Matrix Ultimate System</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+*{box-sizing:border-box}
+body{margin:0;background:#000;color:#00ff66;font-family:monospace;overflow:hidden}
+#matrix{position:fixed;inset:0;z-index:0}
+#terminal{position:relative;z-index:2;width:min(850px,94vw);height:75vh;margin:5vh auto;padding:20px;background:#000e;border:1px solid #00ff66;box-shadow:0 0 25px #00ff6680;overflow:auto}
+#output{white-space:pre-wrap;line-height:1.5;overflow-wrap:anywhere}
+#commandLine{display:flex;gap:8px;margin-top:12px}
+#command{flex:1;min-width:0;background:transparent;border:0;outline:0;color:#00ff66;font:inherit;font-size:16px}
+#bonzi{position:fixed;z-index:20;right:18px;bottom:10px;text-align:center;cursor:pointer;filter:drop-shadow(0 0 12px #b000ff)}
+#bonziFace{font-size:60px;animation:bounce 2s infinite}
+#bonziBubble{max-width:220px;background:#6521a8;border:1px solid #d7a5ff;color:white;padding:9px;border-radius:12px;font-size:12px;margin-bottom:8px}
+@keyframes bounce{50%{transform:translateY(-9px)}}
+.virusWindow{position:fixed;z-index:30;width:230px;padding:12px;background:#160000;color:white;border:2px solid red;box-shadow:0 0 20px red;text-align:center;animation:shake .3s infinite}
+@keyframes shake{50%{transform:rotate(1deg)}}
+.virusWindow button{cursor:pointer}
 
-:root {
-    --green: #00ff41;
-    --purple: #bd45ff;
-    --bg: #020603;
-}
+/* WORM GAME */
+#gameOverlay{display:none;position:fixed;inset:0;z-index:10;overflow:auto;background:#000f;text-align:center;padding:12px}
+#gamePanel{width:min(950px,100%);margin:auto;border:1px solid #00ff66;padding:12px}
+#gameInfo{display:flex;justify-content:center;gap:15px;flex-wrap:wrap}
+#maze{display:grid;justify-content:center;width:max-content;max-width:100%;margin:12px auto;border:2px solid #00ff66}
+.cell{width:var(--cell-size);height:var(--cell-size);background:#061006}
+.wall{background:#00a83f}
+.player{background:white;border-radius:50%;box-shadow:0 0 8px white}
+.exit{background:#ffdf00}
+#gameMessage{min-height:24px}
+.gameButtons{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.gameButtons button,#mobileControls button{background:#001b08;color:#00ff66;border:1px solid #00ff66;padding:9px;cursor:pointer;font:inherit}
+#mobileControls{display:grid;grid-template-columns:repeat(3,48px);justify-content:center;gap:5px;margin:12px}
+#mobileControls button{font-size:20px}
+.empty{visibility:hidden}
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    background: var(--bg);
-    color: var(--green);
-    font-family: 'Share Tech Mono', monospace;
-    overflow: hidden;
-    min-height: 100vh;
-}
-
-#matrix {
-    position: fixed;
-    inset: 0;
-    z-index: -2;
-}
-
-body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 900;
-    background: repeating-linear-gradient(
-        transparent 0px,
-        rgba(0,255,65,.025) 1px,
-        transparent 3px
-    );
-}
-
-.container {
-    width: min(1100px, 94%);
-    margin: auto;
-    padding: 30px 0;
-    position: relative;
-    z-index: 2;
-}
-
-header {
-    border-bottom: 1px solid #00ff4160;
-    padding-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 15px;
-}
-
-.logo {
-    font-size: clamp(25px, 5vw, 45px);
-    letter-spacing: 5px;
-    text-shadow: 0 0 15px var(--green);
-}
-
-.logo span {
-    color: white;
-}
-
-.status {
-    font-size: 12px;
-}
-
-.dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    background: var(--green);
-    border-radius: 50%;
-    box-shadow: 0 0 12px var(--green);
-    animation: blink 1s infinite;
-}
-
-@keyframes blink {
-    50% { opacity: .2; }
-}
-
-.dashboard {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-    margin-top: 25px;
-}
-
-.panel {
-    background: rgba(0,15,5,.88);
-    border: 1px solid #00ff4155;
-    padding: 20px;
-    box-shadow: 0 0 20px #00ff4110;
-}
-
-.panel h2 {
-    font-size: 15px;
-    margin-bottom: 18px;
-    color: white;
-}
-
-.big-number {
-    font-size: 35px;
-    text-shadow: 0 0 15px var(--green);
-}
-
-.small {
-    font-size: 11px;
-    color: #6bbd75;
-    margin-top: 8px;
-}
-
-.terminal {
-    grid-column: 1 / -1;
-    min-height: 260px;
-}
-
-.terminal-output {
-    height: 170px;
-    overflow-y: auto;
-    font-size: 13px;
-    line-height: 1.8;
-}
-
-.input-line {
-    display: flex;
-    align-items: center;
-    border-top: 1px solid #00ff4130;
-    padding-top: 12px;
-    gap: 10px;
-}
-
-input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: var(--green);
-    font: inherit;
-    min-width: 0;
-}
-
-button {
-    background: transparent;
-    border: 1px solid var(--green);
-    color: var(--green);
-    padding: 8px 15px;
-    font: inherit;
-    cursor: pointer;
-    transition: .2s;
-}
-
-button:hover {
-    background: var(--green);
-    color: black;
-    box-shadow: 0 0 20px var(--green);
-}
-
-.progress {
-    height: 5px;
-    background: #14351a;
-    margin-top: 15px;
-}
-
-.progress-bar {
-    height: 100%;
-    width: 0;
-    background: var(--green);
-    box-shadow: 0 0 12px var(--green);
-    transition: width .2s;
-}
-
-footer {
-    text-align: center;
-    margin-top: 25px;
-    font-size: 11px;
-    color: #478d50;
-    letter-spacing: 2px;
-}
-
-/* VIRUS WINDOWS */
-
-.virus-window {
-    position: fixed;
-    width: 260px;
-    max-width: calc(100vw - 20px);
-    background: #020b03;
-    border: 2px solid var(--green);
-    box-shadow: 0 0 25px var(--green);
-    z-index: 100;
-    color: var(--green);
-    animation: virusPop .25s ease-out;
-}
-
-.virus-header {
-    background: var(--green);
-    color: black;
-    padding: 8px;
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-}
-
-.virus-close {
-    cursor: pointer;
-    font-weight: bold;
-    padding: 0 5px;
-}
-
-.virus-content {
-    padding: 25px 12px;
-    text-align: center;
-    font-size: 17px;
-    text-shadow: 0 0 10px var(--green);
-}
-
-.virus-counter {
-    font-size: 11px;
-    text-align: center;
-    padding-bottom: 10px;
-}
-
-@keyframes virusPop {
-    from {
-        transform: scale(.3) rotate(-10deg);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-/* BONZI BUDDY */
-
-#bonzi {
-    position: fixed;
-    right: 25px;
-    bottom: 20px;
-    z-index: 500;
-    width: 155px;
-    text-align: center;
-    cursor: pointer;
-    animation: bonziFloat 2s ease-in-out infinite;
-}
-
-.bonzi-character {
-    font-size: 85px;
-    filter: drop-shadow(0 0 15px var(--purple));
-    user-select: none;
-    transition: .2s;
-}
-
-#bonzi:hover .bonzi-character {
-    transform: scale(1.15) rotate(-8deg);
-}
-
-.bonzi-bubble {
-    background: #f5eaff;
-    color: #541080;
-    border: 3px solid var(--purple);
-    border-radius: 15px;
-    padding: 12px;
-    font-family: Arial, sans-serif;
-    font-size: 13px;
-    font-weight: bold;
-    margin-bottom: 5px;
-    box-shadow: 0 0 20px var(--purple);
-    position: relative;
-    min-height: 45px;
-}
-
-.bonzi-name {
-    color: #d68aff;
-    font-size: 11px;
-    letter-spacing: 2px;
-    margin-top: 4px;
-}
-
-@keyframes bonziFloat {
-    0%,100% { transform: translateY(0); }
-    50% { transform: translateY(-12px); }
-}
-
-@media(max-width:650px) {
-    .dashboard {
-        grid-template-columns: 1fr;
-    }
-
-    .terminal {
-        grid-column: auto;
-    }
-
-    #bonzi {
-        right: 5px;
-        bottom: 5px;
-        transform: scale(.8);
-        transform-origin: bottom right;
-    }
-
-    .container {
-        padding-bottom: 150px;
-    }
+/* MINECRAFT */
+#mineOverlay{display:none;position:fixed;inset:0;z-index:15;background:#000}
+#mineCanvas{width:100%;height:100%;display:block}
+#mineHUD{position:absolute;inset:0;pointer-events:none;color:white;text-shadow:2px 2px 3px black}
+#mineTop{position:absolute;top:12px;left:0;right:0;text-align:center;font-size:14px}
+#mineHelp{position:absolute;top:42px;left:12px;font-size:12px;line-height:1.6}
+#crosshair{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:25px}
+#hotbar{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:4px;pointer-events:auto}
+.slot{width:54px;height:54px;background:#222b;border:2px solid #aaa;display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:11px}
+.slot.selected{border:3px solid white;background:#555c}
+.blockIcon{width:23px;height:23px;border:1px solid #aaa}
+#mineStart{position:absolute;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px}
+#mineStart h1{font-size:clamp(25px,5vw,55px);color:#65e65b;text-shadow:3px 3px #174d17}
+#mineStart button{padding:14px 25px;background:#438d32;border:3px solid #a2e58b;color:white;font:bold 18px monospace;cursor:pointer}
+#mineExit{position:absolute;top:10px;right:10px;pointer-events:auto;background:#700;color:white;border:1px solid white;padding:8px;cursor:pointer}
+#mineInventory{position:absolute;bottom:85px;left:50%;transform:translateX(-50%);text-align:center;font-size:12px}
+@media(max-width:600px){
+ #terminal{height:70vh;padding:12px}
+ #bonzi{right:5px}
+ #bonziFace{font-size:45px}
+ .slot{width:38px;height:44px}
+ .blockIcon{width:18px;height:18px}
+ #mineHelp{font-size:10px}
 }
 </style>
 </head>
-
 <body>
 
 <canvas id="matrix"></canvas>
 
-<div class="container">
+<div id="terminal">
+<div id="output">MATRIX ULTIMATE SYSTEM
+-----------------------------
+Secure connection established.
+Welcome to the Matrix.
 
-<header>
-    <div class="logo">M<span>A</span>TRIX</div>
+Commands:
+help
+scan
+network
+virus
+worm
+mine
+clear
+about
 
-    <div class="status">
-        <span class="dot"></span>
-        SYSTEM ONLINE
-        <div id="clock"></div>
-    </div>
-</header>
-
-<div class="dashboard">
-
-    <div class="panel">
-        <h2>◈ SYSTEM STATUS</h2>
-        <div class="big-number">ACTIVE</div>
-        <div class="small">ALL SYSTEMS OPERATIONAL</div>
-    </div>
-
-    <div class="panel">
-        <h2>◈ SECURITY LEVEL</h2>
-        <div class="big-number">99.9%</div>
-        <div class="small">SIMULATED SECURITY</div>
-    </div>
-
-    <div class="panel">
-        <h2>◈ NETWORK ACTIVITY</h2>
-        <div class="big-number" id="network">0842</div>
-        <div class="small">SIMULATED DATA PACKETS / SEC</div>
-    </div>
-
-    <div class="panel">
-        <h2>◈ SYSTEM SCAN</h2>
-        <div class="big-number" id="scan">READY</div>
-
-        <div class="progress">
-            <div class="progress-bar" id="bar"></div>
-        </div>
-
-        <div class="small" id="scanText">
-            WAITING FOR COMMAND...
-        </div>
-
-        <br>
-        <button onclick="startScan()">START SCAN</button>
-    </div>
-
-    <div class="panel terminal">
-        <h2>◈ MATRIX TERMINAL</h2>
-
-        <div class="terminal-output" id="output">
-            <div>> MATRIX KERNEL INITIALIZED</div>
-            <div>> SECURE CONNECTION ESTABLISHED</div>
-            <div>> BONZI BUDDY CONNECTED</div>
-            <div>> TYPE HELP TO VIEW COMMANDS</div>
-            <div>> READY_</div>
-        </div>
-
-        <div class="input-line">
-            <span>root@matrix:~$</span>
-
-            <input
-                id="command"
-                placeholder="Enter command..."
-                autocomplete="off"
-            >
-
-            <button onclick="runCommand()">EXECUTE</button>
-        </div>
-    </div>
-
+Type a command to continue.</div>
+<div id="commandLine">
+<span>root@matrix:~$</span>
+<input id="command" autocomplete="off" autofocus>
 </div>
-
-<footer>
-    MATRIX DIGITAL ENVIRONMENT // 2026
-    <br><br>
-    FOLLOW THE WHITE RABBIT
-</footer>
-
 </div>
-
-
-<!-- BONZI BUDDY -->
 
 <div id="bonzi" onclick="bonziTalk()">
-
-    <div class="bonzi-bubble" id="bonziBubble">
-        Hey there! I'm Bonzi! :D
-    </div>
-
-    <div class="bonzi-character">🦍</div>
-
-    <div class="bonzi-name">BONZI BUDDY 💜</div>
-
+<div id="bonziBubble">Hello! I'm Bonzi Buddy. 😎</div>
+<div id="bonziFace">🦍</div>
 </div>
 
+<!-- WORM -->
+<div id="gameOverlay">
+<div id="gamePanel">
+<h2>🐛 MATRIX WORM MAZE</h2>
+<div id="gameInfo">
+<span>LEVEL: <b id="level">1</b></span>
+<span>MOVES: <b id="moves">0</b></span>
+<span>TIME: <b id="time">100</b>s</span>
+</div>
+<div id="gameMessage">Find the yellow exit!</div>
+<div id="maze"></div>
+<div id="mobileControls">
+<button class="empty"> </button><button onclick="move(0,-1)">▲</button><button class="empty"> </button>
+<button onclick="move(-1,0)">◀</button><button onclick="move(0,1)">▼</button><button onclick="move(1,0)">▶</button>
+</div>
+<div class="gameButtons">
+<button onclick="newGame()">NEW MAZE</button>
+<button onclick="closeGame()">EXIT GAME</button>
+</div>
+<p>WASD / nuolinäppäimet</p>
+</div>
+</div>
+
+<!-- MINECRAFT -->
+<div id="mineOverlay">
+<canvas id="mineCanvas"></canvas>
+<div id="mineHUD">
+<button id="mineExit" onclick="closeMine()">EXIT GAME ✕</button>
+<div id="mineTop">MATRIX CRAFT | <span id="mineStatus">Survival mode</span></div>
+<div id="mineHelp">WASD = Move<br>SPACE = Jump<br>Mouse = Look<br>Left click = Break<br>Right click = Place<br>1–6 = Select block<br>ESC = Release mouse</div>
+<div id="crosshair">+</div>
+<div id="mineInventory"></div>
+<div id="hotbar"></div>
+</div>
+<div id="mineStart">
+<h1>⛏ MATRIX CRAFT</h1>
+<p>Explore the block world!</p>
+<p>Break blocks, collect resources and build.</p>
+<button id="startMine">PLAY GAME</button>
+<p style="font-size:12px">Click PLAY and then click the world to control it.</p>
+</div>
+</div>
 
 <script>
+/* MATRIX RAIN */
+const matrixCanvas=document.getElementById("matrix");
+const mctx=matrixCanvas.getContext("2d");
+let drops=[];
+function resizeMatrix(){
+ matrixCanvas.width=innerWidth;
+ matrixCanvas.height=innerHeight;
+ drops=Array(Math.floor(innerWidth/16)).fill(1);
+}
+resizeMatrix();
+addEventListener("resize",resizeMatrix);
+setInterval(()=>{
+ mctx.fillStyle="rgba(0,0,0,.07)";
+ mctx.fillRect(0,0,matrixCanvas.width,matrixCanvas.height);
+ mctx.fillStyle="#00ff66";
+ mctx.font="16px monospace";
+ drops.forEach((y,i)=>{
+  mctx.fillText(String.fromCharCode(0x30A0+Math.random()*96),i*16,y*16);
+  if(y*16>matrixCanvas.height&&Math.random()>.975)drops[i]=0;
+  drops[i]++;
+ });
+},40);
 
-// MATRIX RAIN
-
-const canvas = document.getElementById("matrix");
-const ctx = canvas.getContext("2d");
-
-const chars =
-"アイウエオカキクケコ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-const fontSize = 15;
-let drops = [];
-
-function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    drops = Array(
-        Math.floor(canvas.width / fontSize)
-    ).fill(1);
+/* TERMINAL */
+const output=document.getElementById("output");
+const commandInput=document.getElementById("command");
+function print(t){
+ output.textContent+="\n"+t;
+ output.parentElement.scrollTop=output.parentElement.scrollHeight;
+}
+commandInput.addEventListener("keydown",e=>{
+ if(e.key==="Enter"){
+  const cmd=commandInput.value.trim().toLowerCase();
+  commandInput.value="";
+  if(!cmd)return;
+  print("\nroot@matrix:~$ "+cmd);
+  runCommand(cmd);
+ }
+});
+function runCommand(cmd){
+ switch(cmd){
+  case "help":print("help, scan, network, virus, worm, mine, clear, about");break;
+  case "scan":startScan();break;
+  case "network":print("NETWORK: ACTIVE\nConnected nodes: "+Math.floor(Math.random()*900+100));break;
+  case "virus":startVirus();break;
+  case "worm":openGame();break;
+  case "mine":openMine();break;
+  case "clear":output.textContent="MATRIX TERMINAL CLEARED.";break;
+  case "about":print("MATRIX ULTIMATE SYSTEM — browser simulation.");break;
+  default:print("Unknown command: "+cmd);
+ }
+}
+function startScan(){
+ print("Starting simulated scan...");
+ let n=0;
+ const t=setInterval(()=>{
+  n+=10;print("Scanning... "+n+"%");
+  if(n>=100){clearInterval(t);print("SCAN COMPLETE.");}
+ },250);
 }
 
-function drawMatrix() {
-
-    ctx.fillStyle = "rgba(0,0,0,0.08)";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-
-    ctx.fillStyle = "#00ff41";
-    ctx.font = fontSize + "px monospace";
-
-    drops.forEach((y,i) => {
-
-        const char =
-            chars[Math.floor(Math.random()*chars.length)];
-
-        ctx.fillText(char,i*fontSize,y*fontSize);
-
-        if(
-            y*fontSize > canvas.height &&
-            Math.random() > .975
-        ) {
-            drops[i] = 0;
-        }
-
-        drops[i]++;
-    });
+/* BONZI */
+const bonziMessages=[
+ "I am watching you... 👀","Nice computer you have there!",
+ "Have you tried Minecraft?","01001000 01001001",
+ "You cannot escape the Matrix!","I know what you typed. 😈",
+ "Click me if you dare!","ERROR 404: Banana not found 🍌"
+];
+function bonziTalk(){
+ document.getElementById("bonziBubble").textContent=
+ bonziMessages[Math.floor(Math.random()*bonziMessages.length)];
 }
+setInterval(()=>{if(Math.random()<.4)bonziTalk()},12000);
 
-window.addEventListener("resize",resize);
-resize();
-
-setInterval(drawMatrix,40);
-
-
-// CLOCK
-
-function updateClock() {
-
-    document.getElementById("clock").textContent =
-        new Date().toLocaleTimeString("fi-FI");
-
+/* VIRUS PRANK */
+let virusCount=0,virusWindows=[];
+function startVirus(){
+ print("SIMULATED VIRUS STARTED!");
+ print("I GOT YOU NOW LIL BRO :D.");
+ virusCount=0;virusWindows.forEach(w=>w.remove());virusWindows=[];
+ for(let i=0;i<4;i++)createVirusWindow();
 }
-
-setInterval(updateClock,1000);
-updateClock();
-
-
-// NETWORK COUNTER
-
-setInterval(() => {
-
-    document.getElementById("network").textContent =
-        Math.floor(500+Math.random()*900);
-
-},1000);
-
-
-// TERMINAL
-
-const output = document.getElementById("output");
-const input = document.getElementById("command");
-
-function print(text) {
-
-    const line = document.createElement("div");
-
-    line.textContent = "> " + text;
-
-    output.appendChild(line);
-
-    output.scrollTop = output.scrollHeight;
+function createVirusWindow(){
+ if(virusCount>=40){clearVirusWindows();return;}
+ virusCount++;
+ const w=document.createElement("div");
+ w.className="virusWindow";
+ w.style.left=Math.random()*Math.max(10,innerWidth-250)+"px";
+ w.style.top=Math.random()*Math.max(10,innerHeight-160)+"px";
+ w.innerHTML="<h3>⚠ SYSTEM ALERT ⚠</h3><p>I GOT U LIL BRO</p><p>GOOD LUCK :D</p><button>Close</button>";
+ w.querySelector("button").onclick=()=>{
+  w.remove();
+  virusWindows=virusWindows.filter(x=>x!==w);
+  if(virusCount>=40){clearVirusWindows();print("PRANK COMPLETE! YOU GOT PRANKED :D");}
+  else{createVirusWindow();createVirusWindow();}
+ };
+ document.body.appendChild(w);virusWindows.push(w);
 }
+function clearVirusWindows(){virusWindows.forEach(w=>w.remove());virusWindows=[];}
 
-function runCommand() {
+/* WORM MAZE */
+const gameOverlay=document.getElementById("gameOverlay");
+const mazeElement=document.getElementById("maze");
+const gameMessage=document.getElementById("gameMessage");
+let level=1,moves=0,time=100,player={x:1,y:1};
+let exitPoint={x:0,y:0},maze=[],mazeWidth=21,mazeHeight=15;
+let gameTimer=null,nextLevelTimer=null,gameRunning=false;
 
-    const cmd = input.value.trim().toLowerCase();
-
-    if(!cmd) return;
-
-    print("root@matrix:~$ " + cmd);
-
-    switch(cmd) {
-
-        case "help":
-            print("COMMANDS: help, clear, status, scan, matrix, whoami, date, virus, bonzi");
-            break;
-
-        case "clear":
-            output.innerHTML = "";
-            break;
-
-        case "status":
-            print("SYSTEM ONLINE | SECURITY ACTIVE");
-            break;
-
-        case "scan":
-            startScan();
-            break;
-
-        case "matrix":
-            print("WELCOME TO THE MATRIX.");
-            break;
-
-        case "whoami":
-            print("GUEST USER // SIMULATED SESSION");
-            break;
-
-        case "date":
-            print(new Date().toString());
-            break;
-
-        case "virus":
-            startVirus();
-            break;
-
-        case "bonzi":
-            bonziTalk("I GOT U LIL BRO GOOD LUCK :D");
-            print("BONZI BUDDY IS WATCHING YOU 💜");
-            break;
-
-        default:
-            print("UNKNOWN COMMAND: " + cmd);
-            print("TYPE HELP FOR COMMANDS.");
-    }
-
-    input.value = "";
+function openGame(){gameOverlay.style.display="block";level=1;newGame();}
+function closeGame(){gameOverlay.style.display="none";stopGame();}
+function stopGame(){gameRunning=false;clearInterval(gameTimer);clearTimeout(nextLevelTimer);}
+function newGame(){
+ stopGame();
+ moves=0;time=Math.max(35,100-(level-1)*12);
+ mazeWidth=Math.min(43,21+(level-1)*2);
+ mazeHeight=Math.min(31,15+(level-1)*2);
+ if(mazeWidth%2===0)mazeWidth++;
+ if(mazeHeight%2===0)mazeHeight++;
+ generateMaze();
+ player={x:1,y:1};
+ exitPoint={x:mazeWidth-2,y:mazeHeight-2};
+ document.getElementById("level").textContent=level;
+ document.getElementById("moves").textContent=moves;
+ document.getElementById("time").textContent=time;
+ gameMessage.textContent="Find the yellow exit!";
+ gameRunning=true;renderMaze();
+ gameTimer=setInterval(()=>{
+  if(!gameRunning)return;
+  time--;
+  document.getElementById("time").textContent=time;
+  if(time<=0){stopGame();gameMessage.textContent="TIME'S UP! Try NEW MAZE.";}
+ },1000);
 }
-
-input.addEventListener("keydown",e => {
-
-    if(e.key === "Enter") runCommand();
-
+function generateMaze(){
+ maze=Array.from({length:mazeHeight},()=>Array(mazeWidth).fill(1));
+ const stack=[{x:1,y:1}];maze[1][1]=0;
+ const dirs=[[0,-2],[0,2],[-2,0],[2,0]];
+ while(stack.length){
+  const c=stack[stack.length-1];
+  const opts=dirs.map(([dx,dy])=>({x:c.x+dx,y:c.y+dy,dx,dy}))
+   .filter(p=>p.x>0&&p.x<mazeWidth-1&&p.y>0&&p.y<mazeHeight-1&&maze[p.y][p.x]===1);
+  if(!opts.length){stack.pop();continue;}
+  const n=opts[Math.floor(Math.random()*opts.length)];
+  maze[c.y+n.dy/2][c.x+n.dx/2]=0;
+  maze[n.y][n.x]=0;
+  stack.push({x:n.x,y:n.y});
+ }
+ maze[mazeHeight-2][mazeWidth-2]=0;
+}
+function renderMaze(){
+ mazeElement.innerHTML="";
+ const size=Math.min(18,Math.max(5,Math.floor((innerWidth-40)/mazeWidth)));
+ mazeElement.style.setProperty("--cell-size",size+"px");
+ mazeElement.style.gridTemplateColumns=`repeat(${mazeWidth},var(--cell-size))`;
+ for(let y=0;y<mazeHeight;y++)for(let x=0;x<mazeWidth;x++){
+  const cell=document.createElement("div");cell.className="cell";
+  if(maze[y][x]===1)cell.classList.add("wall");
+  if(x===player.x&&y===player.y)cell.classList.add("player");
+  if(x===exitPoint.x&&y===exitPoint.y)cell.classList.add("exit");
+  mazeElement.appendChild(cell);
+ }
+}
+function move(dx,dy){
+ if(!gameRunning)return;
+ const nx=player.x+dx,ny=player.y+dy;
+ if(nx<0||nx>=mazeWidth||ny<0||ny>=mazeHeight||maze[ny][nx]===1)return;
+ player.x=nx;player.y=ny;moves++;
+ document.getElementById("moves").textContent=moves;
+ if(nx===exitPoint.x&&ny===exitPoint.y){
+  stopGame();gameMessage.textContent="LEVEL COMPLETE! NEXT LEVEL...";
+  level++;
+  nextLevelTimer=setTimeout(()=>{if(gameOverlay.style.display==="block")newGame();},1800);
+  return;
+ }
+ renderMaze();
+}
+document.addEventListener("keydown",e=>{
+ if(gameOverlay.style.display!=="block")return;
+ const keys={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]};
+ const dir=keys[e.key]||keys[e.key.toLowerCase()];
+ if(dir){e.preventDefault();move(...dir);}
 });
 
+/* MATRIX CRAFT - THREE.JS */
+let THREE=null,scene,camera,renderer,controls;
+let mineStarted=false,mineAnimation=null;
+let blocks=[],blockMeshes=[],inventory={grass:20,dirt:20,stone:20,wood:10,sand:10,leaves:10};
+let selectedBlock="grass";
+let keysDown={};
+let velocityY=0,onGround=false;
+const blockTypes={
+ grass:{color:0x55aa35,label:"Grass"},
+ dirt:{color:0x87502b,label:"Dirt"},
+ stone:{color:0x888888,label:"Stone"},
+ wood:{color:0x99602c,label:"Wood"},
+ sand:{color:0xdcc77b,label:"Sand"},
+ leaves:{color:0x26752a,label:"Leaves"}
+};
+const mineOverlay=document.getElementById("mineOverlay");
+const mineStart=document.getElementById("mineStart");
+const mineCanvas=document.getElementById("mineCanvas");
 
-// SYSTEM SCAN
-
-let scanning = false;
-
-function startScan() {
-
-    if(scanning) return;
-
-    scanning = true;
-
-    let progress = 0;
-
-    document.getElementById("scan").textContent =
-        "RUNNING";
-
-    const timer = setInterval(() => {
-
-        progress += Math.floor(Math.random()*9)+2;
-
-        if(progress >= 100) {
-
-            progress = 100;
-
-            clearInterval(timer);
-
-            document.getElementById("scan").textContent =
-                "DONE";
-
-            document.getElementById("scanText").textContent =
-                "SIMULATED SCAN COMPLETE";
-
-            scanning = false;
-        }
-
-        document.getElementById("bar").style.width =
-            progress + "%";
-
-        document.getElementById("scanText").textContent =
-            "SCANNING... " + progress + "%";
-
-    },150);
+async function openMine(){
+ mineOverlay.style.display="block";
+ document.getElementById("mineStatus").textContent="Loading world...";
+ if(!THREE){
+  try{
+   THREE=await import("https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js");
+  }catch(e){
+   document.getElementById("mineStatus").textContent="Could not load Three.js. Check internet connection.";
+   return;
+  }
+ }
+ if(!renderer)setupMine();
+ mineStart.style.display="flex";
+ document.getElementById("mineStatus").textContent="World ready";
 }
 
-
-// VIRUS PRANK
-
-let virusWindows = [];
-let virusActive = false;
-
-function startVirus() {
-
-    if(virusActive) {
-        print("VIRUS ALREADY RUNNING!");
-        return;
-    }
-
-    virusActive = true;
-    virusWindows = [];
-
-    function createVirusWindow() {
-
-        const win = document.createElement("div");
-
-        win.className = "virus-window";
-
-        const maxX = Math.max(0,window.innerWidth-270);
-        const maxY = Math.max(0,window.innerHeight-160);
-
-        win.style.left = Math.random()*maxX + "px";
-        win.style.top = Math.random()*maxY + "px";
-
-        win.innerHTML = `
-            <div class="virus-header">
-                <span>⚠ MATRIX VIRUS</span>
-                <span class="virus-close">✖</span>
-            </div>
-
-            <div class="virus-content">
-                I GOT U LIL BRO<br>
-                GOOD LUCK :D
-            </div>
-
-            <div class="virus-counter"></div>
-        `;
-
-        document.body.appendChild(win);
-
-        virusWindows.push(win);
-
-        updateVirusCounters();
-
-        win.querySelector(".virus-close").onclick = () => {
-
-            if(!virusWindows.includes(win)) return;
-
-            const count = virusWindows.length;
-
-            if(count >= 10) {
-
-                virusWindows.forEach(w => w.remove());
-
-                virusWindows = [];
-                virusActive = false;
-
-                print("VIRUS SELF-DESTRUCTED :D");
-
-                bonziTalk("HAHAHA! I GOT U LIL BRO!");
-
-                return;
-            }
-
-            win.remove();
-
-            virusWindows =
-                virusWindows.filter(w => w !== win);
-
-            for(let i=0; i<count*2; i++) {
-                createVirusWindow();
-            }
-        };
-    }
-
-    function updateVirusCounters() {
-
-        virusWindows.forEach((w,i) => {
-
-            w.querySelector(".virus-counter").textContent =
-                "WINDOW " + (i+1) + " / 10";
-
-        });
-    }
-
-    createVirusWindow();
-
-    print("VIRUS ACTIVATED :D");
-
-    bonziTalk("OH NO! WHAT HAVE YOU DONE?! XD");
+function closeMine(){
+ mineOverlay.style.display="none";
+ mineStarted=false;
+ if(controls&&controls.isLocked)controls.unlock();
+ if(mineAnimation)cancelAnimationFrame(mineAnimation);
 }
 
+function setupMine(){
+ scene=new THREE.Scene();
+ scene.background=new THREE.Color(0x87ceeb);
+ scene.fog=new THREE.Fog(0x87ceeb,20,65);
 
-// BONZI BUDDY
+ camera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,0.1,1000);
+ camera.position.set(0,5,8);
 
-const bonziMessages = [
+ renderer=new THREE.WebGLRenderer({canvas:mineCanvas,antialias:true});
+ renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+ renderer.setSize(innerWidth,innerHeight);
 
-    "Hey there! I'm Bonzi! :D",
-    "I got u lil bro!",
-    "GOOD LUCK BRO XD",
-    "Welcome to the Matrix!",
-    "I'm watching you... 👀",
-    "Need some help?",
-    "01001000 01001001",
-    "HAHAHAHA!",
-    "You can't escape me!",
-    "Have a nice day! 💜",
-    "I AM YOUR NEW BEST FRIEND!",
-    "FOLLOW THE WHITE RABBIT!"
+ const ambient=new THREE.HemisphereLight(0xffffff,0x556644,2);
+ scene.add(ambient);
+ const sun=new THREE.DirectionalLight(0xffffff,2);
+ sun.position.set(20,40,15);scene.add(sun);
 
-];
+ controls=new THREE.PointerLockControls(camera,mineCanvas);
+ scene.add(controls.getObject());
 
-function bonziTalk(message) {
+ window.addEventListener("resize",()=>{
+  if(!renderer)return;
+  camera.aspect=innerWidth/innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth,innerHeight);
+ });
 
-    const bubble =
-        document.getElementById("bonziBubble");
-
-    bubble.textContent = message ||
-        bonziMessages[
-            Math.floor(Math.random()*bonziMessages.length)
-        ];
+ createWorld();
+ buildHotbar();
 }
 
+function createWorld(){
+ blocks.forEach(b=>scene.remove(b.mesh));
+ blocks=[];blockMeshes=[];
+ const size=40;
+ const heightMap=[];
+ for(let x=-size/2;x<size/2;x++){
+  heightMap[x+size/2]=[];
+  for(let z=-size/2;z<size/2;z++){
+   const h=Math.floor(2+Math.sin(x*.25)*1.4+Math.cos(z*.22)*1.3+Math.random()*.8);
+   heightMap[x+size/2][z+size/2]=h;
+   for(let y=0;y<=h;y++){
+    let type=y===h?"grass":y>=h-2?"dirt":"stone";
+    addBlock(x,y,z,type);
+   }
+   if(Math.random()<.035&&h>=2)createTree(x,h+1,z);
+  }
+ }
+ camera.position.set(0,8,8);
+}
 
-// BONZI RANDOM SPEECH
+function addBlock(x,y,z,type){
+ const geometry=new THREE.BoxGeometry(1,1,1);
+ const material=new THREE.MeshLambertMaterial({color:blockTypes[type].color});
+ const mesh=new THREE.Mesh(geometry,material);
+ mesh.position.set(x,y,z);
+ mesh.userData={type,x,y,z};
+ scene.add(mesh);
+ const item={mesh,type,x,y,z};
+ blocks.push(item);blockMeshes.push(mesh);
+ return item;
+}
 
-setInterval(() => {
+function createTree(x,y,z){
+ for(let i=0;i<3;i++)addBlock(x,y+i,z,"wood");
+ for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++){
+  for(let dy=2;dy<=3;dy++){
+   if(Math.random()>.15)addBlock(x+dx,y+dy,z+dz,"leaves");
+  }
+ }
+ addBlock(x,y+4,z,"leaves");
+}
 
-    bonziTalk();
+function buildHotbar(){
+ const bar=document.getElementById("hotbar");
+ bar.innerHTML="";
+ Object.keys(blockTypes).forEach((type,i)=>{
+  const slot=document.createElement("div");
+  slot.className="slot"+(type===selectedBlock?" selected":"");
+  slot.innerHTML=`<div class="blockIcon" style="background:#${blockTypes[type].color.toString(16).padStart(6,"0")}"></div><span>${i+1}: ${inventory[type]}</span>`;
+  slot.onclick=()=>selectBlock(type);
+  bar.appendChild(slot);
+ });
+ updateInventory();
+}
+function selectBlock(type){
+ selectedBlock=type;buildHotbar();
+}
+function updateInventory(){
+ const text=Object.keys(inventory).map(t=>blockTypes[t].label+": "+inventory[t]).join(" | ");
+ document.getElementById("mineInventory").textContent=text;
+}
 
-},12000);
+/* Start game */
+document.getElementById("startMine").onclick=()=>{
+ mineStarted=true;
+ mineStart.style.display="none";
+ controls.lock();
+ animateMine();
+};
 
+function animateMine(){
+ if(!mineStarted)return;
+ mineAnimation=requestAnimationFrame(animateMine);
+ updateMineMovement();
+ renderer.render(scene,camera);
+}
 
-// BONZI WELCOME
+function updateMineMovement(){
+ if(!mineStarted)return;
+ const speed=.12;
+ if(keysDown.w||keysDown.ArrowUp)controls.moveForward(speed);
+ if(keysDown.s||keysDown.ArrowDown)controls.moveForward(-speed);
+ if(keysDown.a||keysDown.ArrowLeft)controls.moveRight(-speed);
+ if(keysDown.d||keysDown.ArrowRight)controls.moveRight(speed);
 
-setTimeout(() => {
+ // Basic gravity and jumping
+ const pos=controls.getObject().position;
+ velocityY-=.012;
+ pos.y+=velocityY;
+ if(pos.y<3){pos.y=3;velocityY=0;onGround=true;}
+}
 
-    bonziTalk("I GOT U LIL BRO :D");
+document.addEventListener("keydown",e=>{
+ if(mineOverlay.style.display!=="block")return;
+ keysDown[e.key]=true;
+ if(e.code==="Space"&&onGround&&mineStarted){
+  velocityY=.22;onGround=false;
+ }
+ if("123456".includes(e.key)){
+  const types=Object.keys(blockTypes);
+  selectBlock(types[Number(e.key)-1]);
+ }
+});
+document.addEventListener("keyup",e=>{keysDown[e.key]=false;});
 
-},3000);
+/* Block interaction */
+const raycaster=new THREE.Raycaster();
+const center=new THREE.Vector2(0,0);
+
+mineCanvas.addEventListener("contextmenu",e=>e.preventDefault());
+mineCanvas.addEventListener("mousedown",e=>{
+ if(!mineStarted||!controls.isLocked)return;
+ raycaster.setFromCamera(center,camera);
+ const hits=raycaster.intersectObjects(blockMeshes,false);
+ if(!hits.length)return;
+ const hit=hits[0];
+ const mesh=hit.object;
+ const data=mesh.userData;
+
+ if(e.button===0){
+  // Break block, but don't remove the floor below the player.
+  if(data.y===0)return;
+  scene.remove(mesh);
+  blocks=blocks.filter(b=>b.mesh!==mesh);
+  blockMeshes=blocks.map(b=>b.mesh);
+  inventory[data.type]=(inventory[data.type]||0)+1;
+  buildHotbar();
+ }
+ if(e.button===2){
+  if(inventory[selectedBlock]<=0)return;
+  const normal=hit.face.normal;
+  const p=mesh.position.clone().add(normal);
+  const key=blocks.some(b=>b.x===p.x&&b.y===p.y&&b.z===p.z);
+  if(key)return;
+  // Avoid placing a block inside the player.
+  const playerPos=controls.getObject().position;
+  if(Math.abs(p.x-playerPos.x)<.8&&Math.abs(p.z-playerPos.z)<.8&&Math.abs(p.y+0.5-playerPos.y)<1.8)return;
+  addBlock(p.x,p.y,p.z,selectedBlock);
+  inventory[selectedBlock]--;
+  buildHotbar();
+ }
+});
+
+/* Unlocking mouse shows start overlay again */
+controls && (controls.addEventListener("unlock",()=>{
+ if(mineStarted){
+  mineStarted=false;
+  mineStart.style.display="flex";
+  document.getElementById("mineStatus").textContent="Paused";
+ }
+}));
 
 </script>
-
 </body>
 </html>
