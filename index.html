@@ -1,10 +1,486 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="fi">
 <head>
-    <title>Minun GitHub-sivuni</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MATRIX // SYSTEM ACCESS</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+:root {
+    --green: #00ff41;
+    --darkgreen: #008f11;
+    --bg: #020603;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg);
+    color: var(--green);
+    font-family: 'Share Tech Mono', monospace;
+    overflow: hidden;
+    min-height: 100vh;
+}
+
+/* MATRIX RAIN */
+
+#matrix {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    opacity: .45;
+}
+
+/* SCANLINES */
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+    background: repeating-linear-gradient(
+        transparent 0px,
+        rgba(0,255,65,.025) 1px,
+        transparent 3px
+    );
+}
+
+/* MAIN */
+
+.container {
+    width: min(1100px, 94%);
+    margin: auto;
+    padding: 30px 0;
+    position: relative;
+    z-index: 2;
+}
+
+header {
+    border-bottom: 1px solid #00ff4160;
+    padding-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.logo {
+    font-size: clamp(25px, 5vw, 45px);
+    letter-spacing: 5px;
+    text-shadow: 0 0 15px var(--green);
+}
+
+.logo span {
+    color: white;
+}
+
+.status {
+    font-size: 12px;
+    color: #00ff41;
+}
+
+.dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--green);
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    50% { opacity: .2; }
+}
+
+/* DASHBOARD */
+
+.dashboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-top: 25px;
+}
+
+.panel {
+    background: rgba(0,15,5,.85);
+    border: 1px solid #00ff4155;
+    padding: 20px;
+    box-shadow: 0 0 20px #00ff4110,
+                inset 0 0 20px #00ff4108;
+    position: relative;
+    overflow: hidden;
+}
+
+.panel::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: var(--green);
+    box-shadow: 0 0 10px var(--green);
+}
+
+.panel h2 {
+    font-size: 15px;
+    margin-bottom: 18px;
+    letter-spacing: 2px;
+    color: white;
+}
+
+.big-number {
+    font-size: 38px;
+    text-shadow: 0 0 15px var(--green);
+}
+
+.small {
+    font-size: 11px;
+    color: #6bbd75;
+    margin-top: 8px;
+}
+
+/* TERMINAL */
+
+.terminal {
+    grid-column: 1 / -1;
+    min-height: 260px;
+}
+
+.terminal-output {
+    height: 170px;
+    overflow-y: auto;
+    font-size: 13px;
+    line-height: 1.8;
+    color: #00e83b;
+}
+
+.terminal-output::-webkit-scrollbar {
+    width: 4px;
+}
+
+.terminal-output::-webkit-scrollbar-thumb {
+    background: var(--green);
+}
+
+.input-line {
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #00ff4130;
+    padding-top: 12px;
+    gap: 10px;
+}
+
+.input-line span {
+    color: white;
+}
+
+input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--green);
+    font: inherit;
+    font-size: 14px;
+}
+
+button {
+    background: transparent;
+    border: 1px solid var(--green);
+    color: var(--green);
+    padding: 8px 15px;
+    font: inherit;
+    cursor: pointer;
+    transition: .2s;
+}
+
+button:hover {
+    background: var(--green);
+    color: black;
+    box-shadow: 0 0 20px var(--green);
+}
+
+/* PROGRESS */
+
+.progress {
+    height: 5px;
+    background: #14351a;
+    margin-top: 15px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0;
+    background: var(--green);
+    box-shadow: 0 0 12px var(--green);
+    transition: width .5s;
+}
+
+footer {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 11px;
+    color: #478d50;
+    letter-spacing: 2px;
+}
+
+@media(max-width:650px) {
+    .dashboard {
+        grid-template-columns: 1fr;
+    }
+    .terminal {
+        grid-column: auto;
+    }
+}
+</style>
 </head>
+
 <body>
-    <h1>Tervetuloa GitHub-sivulleni!</h1>
-    <p>Tämä on harjoitustehtävä.</p>
+
+<canvas id="matrix"></canvas>
+
+<div class="container">
+
+<header>
+    <div class="logo">M<span>A</span>TRIX</div>
+    <div class="status">
+        <span class="dot"></span>
+        SYSTEM ONLINE
+        <div id="clock"></div>
+    </div>
+</header>
+
+<div class="dashboard">
+
+    <div class="panel">
+        <h2>◈ SYSTEM STATUS</h2>
+        <div class="big-number">ACTIVE</div>
+        <div class="small">ALL SYSTEMS OPERATIONAL</div>
+    </div>
+
+    <div class="panel">
+        <h2>◈ SECURITY LEVEL</h2>
+        <div class="big-number">99.9%</div>
+        <div class="small">SIMULATED SECURITY MONITOR</div>
+    </div>
+
+    <div class="panel">
+        <h2>◈ NETWORK ACTIVITY</h2>
+        <div class="big-number" id="network">0842</div>
+        <div class="small">SIMULATED DATA PACKETS / SEC</div>
+    </div>
+
+    <div class="panel">
+        <h2>◈ SYSTEM SCAN</h2>
+        <div class="big-number" id="scan">READY</div>
+        <div class="progress">
+            <div class="progress-bar" id="bar"></div>
+        </div>
+        <div class="small" id="scanText">WAITING FOR COMMAND...</div>
+        <br>
+        <button onclick="startScan()">START SCAN</button>
+    </div>
+
+    <div class="panel terminal">
+        <h2>◈ MATRIX TERMINAL</h2>
+
+        <div class="terminal-output" id="output">
+            <div>> MATRIX KERNEL INITIALIZED</div>
+            <div>> SECURE CONNECTION ESTABLISHED</div>
+            <div>> TYPE HELP TO VIEW COMMANDS</div>
+            <div>> READY_</div>
+        </div>
+
+        <div class="input-line">
+            <span>root@matrix:~$</span>
+            <input id="command" placeholder="Enter command..."
+            autocomplete="off">
+            <button onclick="runCommand()">EXECUTE</button>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    MATRIX DIGITAL ENVIRONMENT // 2026
+    <br><br>
+    FOLLOW THE WHITE RABBIT
+</footer>
+
+</div>
+
+<script>
+
+// MATRIX RAIN
+
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+const chars = "アイウエオカキクケコサシスセソタチツテト0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+let fontSize = 15;
+let drops = [];
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let columns = Math.floor(canvas.width / fontSize);
+    drops = Array(columns).fill(1);
+}
+
+function drawMatrix() {
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle = "#00ff41";
+    ctx.font = fontSize + "px monospace";
+
+    drops.forEach((y,i) => {
+        const char = chars[Math.floor(Math.random()*chars.length)];
+
+        ctx.fillText(char,i*fontSize,y*fontSize);
+
+        if(y*fontSize > canvas.height && Math.random() > .975) {
+            drops[i] = 0;
+        }
+
+        drops[i]++;
+    });
+}
+
+window.addEventListener("resize",resize);
+resize();
+setInterval(drawMatrix,40);
+
+
+// CLOCK
+
+function updateClock() {
+    document.getElementById("clock").textContent =
+        new Date().toLocaleTimeString("fi-FI");
+}
+
+setInterval(updateClock,1000);
+updateClock();
+
+
+// NETWORK COUNTER
+
+setInterval(() => {
+    document.getElementById("network").textContent =
+        Math.floor(500 + Math.random()*900);
+},1000);
+
+
+// TERMINAL
+
+const output = document.getElementById("output");
+const input = document.getElementById("command");
+
+function print(text) {
+    const line = document.createElement("div");
+    line.textContent = "> " + text;
+    output.appendChild(line);
+    output.scrollTop = output.scrollHeight;
+}
+
+function runCommand() {
+    const cmd = input.value.trim().toLowerCase();
+
+    if(!cmd) return;
+
+    print("root@matrix:~$ " + cmd);
+
+    switch(cmd) {
+        case "help":
+            print("COMMANDS: help, clear, status, scan, matrix, whoami, date");
+            break;
+
+        case "clear":
+            output.innerHTML = "";
+            break;
+
+        case "status":
+            print("SYSTEM: ONLINE | SECURITY: ACTIVE");
+            break;
+
+        case "scan":
+            startScan();
+            break;
+
+        case "matrix":
+            print("WELCOME TO THE MATRIX.");
+            break;
+
+        case "whoami":
+            print("GUEST USER // SIMULATED SESSION");
+            break;
+
+        case "date":
+            print(new Date().toString());
+            break;
+
+        default:
+            print("UNKNOWN COMMAND: " + cmd);
+            print("TYPE HELP FOR COMMANDS.");
+    }
+
+    input.value = "";
+}
+
+input.addEventListener("keydown", e => {
+    if(e.key === "Enter") runCommand();
+});
+
+
+// SIMULATED SCAN
+
+let scanning = false;
+
+function startScan() {
+    if(scanning) return;
+
+    scanning = true;
+
+    let progress = 0;
+
+    document.getElementById("scan").textContent = "RUNNING";
+
+    const timer = setInterval(() => {
+        progress += Math.floor(Math.random()*9)+2;
+
+        if(progress >= 100) {
+            progress = 100;
+            clearInterval(timer);
+
+            document.getElementById("scan").textContent = "DONE";
+            document.getElementById("scanText").textContent =
+                "SIMULATED SCAN COMPLETE";
+
+            scanning = false;
+        }
+
+        document.getElementById("bar").style.width =
+            progress + "%";
+
+        document.getElementById("scanText").textContent =
+            "SCANNING SYSTEM... " + progress + "%";
+
+    },150);
+}
+
+</script>
+
 </body>
 </html>
