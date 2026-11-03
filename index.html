@@ -4,14 +4,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MATRIX // SYSTEM ACCESS</title>
+<title>MATRIX // BONZI EDITION</title>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
 :root {
     --green: #00ff41;
-    --darkgreen: #008f11;
+    --purple: #bd45ff;
     --bg: #020603;
 }
 
@@ -29,31 +29,24 @@ body {
     min-height: 100vh;
 }
 
-/* MATRIX RAIN */
-
 #matrix {
     position: fixed;
     inset: 0;
     z-index: -2;
-    opacity: .45;
 }
-
-/* SCANLINES */
 
 body::after {
     content: "";
     position: fixed;
     inset: 0;
     pointer-events: none;
-    z-index: 10;
+    z-index: 900;
     background: repeating-linear-gradient(
         transparent 0px,
         rgba(0,255,65,.025) 1px,
         transparent 3px
     );
 }
-
-/* MAIN */
 
 .container {
     width: min(1100px, 94%);
@@ -85,7 +78,6 @@ header {
 
 .status {
     font-size: 12px;
-    color: #00ff41;
 }
 
 .dot {
@@ -102,8 +94,6 @@ header {
     50% { opacity: .2; }
 }
 
-/* DASHBOARD */
-
 .dashboard {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -112,35 +102,20 @@ header {
 }
 
 .panel {
-    background: rgba(0,15,5,.85);
+    background: rgba(0,15,5,.88);
     border: 1px solid #00ff4155;
     padding: 20px;
-    box-shadow: 0 0 20px #00ff4110,
-                inset 0 0 20px #00ff4108;
-    position: relative;
-    overflow: hidden;
-}
-
-.panel::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 40px;
-    height: 2px;
-    background: var(--green);
-    box-shadow: 0 0 10px var(--green);
+    box-shadow: 0 0 20px #00ff4110;
 }
 
 .panel h2 {
     font-size: 15px;
     margin-bottom: 18px;
-    letter-spacing: 2px;
     color: white;
 }
 
 .big-number {
-    font-size: 38px;
+    font-size: 35px;
     text-shadow: 0 0 15px var(--green);
 }
 
@@ -149,8 +124,6 @@ header {
     color: #6bbd75;
     margin-top: 8px;
 }
-
-/* TERMINAL */
 
 .terminal {
     grid-column: 1 / -1;
@@ -162,15 +135,6 @@ header {
     overflow-y: auto;
     font-size: 13px;
     line-height: 1.8;
-    color: #00e83b;
-}
-
-.terminal-output::-webkit-scrollbar {
-    width: 4px;
-}
-
-.terminal-output::-webkit-scrollbar-thumb {
-    background: var(--green);
 }
 
 .input-line {
@@ -181,10 +145,6 @@ header {
     gap: 10px;
 }
 
-.input-line span {
-    color: white;
-}
-
 input {
     flex: 1;
     background: transparent;
@@ -192,7 +152,7 @@ input {
     outline: none;
     color: var(--green);
     font: inherit;
-    font-size: 14px;
+    min-width: 0;
 }
 
 button {
@@ -211,8 +171,6 @@ button:hover {
     box-shadow: 0 0 20px var(--green);
 }
 
-/* PROGRESS */
-
 .progress {
     height: 5px;
     background: #14351a;
@@ -224,7 +182,7 @@ button:hover {
     width: 0;
     background: var(--green);
     box-shadow: 0 0 12px var(--green);
-    transition: width .5s;
+    transition: width .2s;
 }
 
 footer {
@@ -235,12 +193,128 @@ footer {
     letter-spacing: 2px;
 }
 
+/* VIRUS WINDOWS */
+
+.virus-window {
+    position: fixed;
+    width: 260px;
+    max-width: calc(100vw - 20px);
+    background: #020b03;
+    border: 2px solid var(--green);
+    box-shadow: 0 0 25px var(--green);
+    z-index: 100;
+    color: var(--green);
+    animation: virusPop .25s ease-out;
+}
+
+.virus-header {
+    background: var(--green);
+    color: black;
+    padding: 8px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+}
+
+.virus-close {
+    cursor: pointer;
+    font-weight: bold;
+    padding: 0 5px;
+}
+
+.virus-content {
+    padding: 25px 12px;
+    text-align: center;
+    font-size: 17px;
+    text-shadow: 0 0 10px var(--green);
+}
+
+.virus-counter {
+    font-size: 11px;
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+@keyframes virusPop {
+    from {
+        transform: scale(.3) rotate(-10deg);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* BONZI BUDDY */
+
+#bonzi {
+    position: fixed;
+    right: 25px;
+    bottom: 20px;
+    z-index: 500;
+    width: 155px;
+    text-align: center;
+    cursor: pointer;
+    animation: bonziFloat 2s ease-in-out infinite;
+}
+
+.bonzi-character {
+    font-size: 85px;
+    filter: drop-shadow(0 0 15px var(--purple));
+    user-select: none;
+    transition: .2s;
+}
+
+#bonzi:hover .bonzi-character {
+    transform: scale(1.15) rotate(-8deg);
+}
+
+.bonzi-bubble {
+    background: #f5eaff;
+    color: #541080;
+    border: 3px solid var(--purple);
+    border-radius: 15px;
+    padding: 12px;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    box-shadow: 0 0 20px var(--purple);
+    position: relative;
+    min-height: 45px;
+}
+
+.bonzi-name {
+    color: #d68aff;
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-top: 4px;
+}
+
+@keyframes bonziFloat {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
 @media(max-width:650px) {
     .dashboard {
         grid-template-columns: 1fr;
     }
+
     .terminal {
         grid-column: auto;
+    }
+
+    #bonzi {
+        right: 5px;
+        bottom: 5px;
+        transform: scale(.8);
+        transform-origin: bottom right;
+    }
+
+    .container {
+        padding-bottom: 150px;
     }
 }
 </style>
@@ -254,6 +328,7 @@ footer {
 
 <header>
     <div class="logo">M<span>A</span>TRIX</div>
+
     <div class="status">
         <span class="dot"></span>
         SYSTEM ONLINE
@@ -272,7 +347,7 @@ footer {
     <div class="panel">
         <h2>◈ SECURITY LEVEL</h2>
         <div class="big-number">99.9%</div>
-        <div class="small">SIMULATED SECURITY MONITOR</div>
+        <div class="small">SIMULATED SECURITY</div>
     </div>
 
     <div class="panel">
@@ -284,10 +359,15 @@ footer {
     <div class="panel">
         <h2>◈ SYSTEM SCAN</h2>
         <div class="big-number" id="scan">READY</div>
+
         <div class="progress">
             <div class="progress-bar" id="bar"></div>
         </div>
-        <div class="small" id="scanText">WAITING FOR COMMAND...</div>
+
+        <div class="small" id="scanText">
+            WAITING FOR COMMAND...
+        </div>
+
         <br>
         <button onclick="startScan()">START SCAN</button>
     </div>
@@ -298,14 +378,20 @@ footer {
         <div class="terminal-output" id="output">
             <div>> MATRIX KERNEL INITIALIZED</div>
             <div>> SECURE CONNECTION ESTABLISHED</div>
+            <div>> BONZI BUDDY CONNECTED</div>
             <div>> TYPE HELP TO VIEW COMMANDS</div>
             <div>> READY_</div>
         </div>
 
         <div class="input-line">
             <span>root@matrix:~$</span>
-            <input id="command" placeholder="Enter command..."
-            autocomplete="off">
+
+            <input
+                id="command"
+                placeholder="Enter command..."
+                autocomplete="off"
+            >
+
             <button onclick="runCommand()">EXECUTE</button>
         </div>
     </div>
@@ -320,6 +406,22 @@ footer {
 
 </div>
 
+
+<!-- BONZI BUDDY -->
+
+<div id="bonzi" onclick="bonziTalk()">
+
+    <div class="bonzi-bubble" id="bonziBubble">
+        Hey there! I'm Bonzi! :D
+    </div>
+
+    <div class="bonzi-character">🦍</div>
+
+    <div class="bonzi-name">BONZI BUDDY 💜</div>
+
+</div>
+
+
 <script>
 
 // MATRIX RAIN
@@ -327,19 +429,23 @@ footer {
 const canvas = document.getElementById("matrix");
 const ctx = canvas.getContext("2d");
 
-const chars = "アイウエオカキクケコサシスセソタチツテト0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-let fontSize = 15;
+const chars =
+"アイウエオカキクケコ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+const fontSize = 15;
 let drops = [];
 
 function resize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    let columns = Math.floor(canvas.width / fontSize);
-    drops = Array(columns).fill(1);
+    drops = Array(
+        Math.floor(canvas.width / fontSize)
+    ).fill(1);
 }
 
 function drawMatrix() {
+
     ctx.fillStyle = "rgba(0,0,0,0.08)";
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
@@ -347,11 +453,16 @@ function drawMatrix() {
     ctx.font = fontSize + "px monospace";
 
     drops.forEach((y,i) => {
-        const char = chars[Math.floor(Math.random()*chars.length)];
+
+        const char =
+            chars[Math.floor(Math.random()*chars.length)];
 
         ctx.fillText(char,i*fontSize,y*fontSize);
 
-        if(y*fontSize > canvas.height && Math.random() > .975) {
+        if(
+            y*fontSize > canvas.height &&
+            Math.random() > .975
+        ) {
             drops[i] = 0;
         }
 
@@ -361,14 +472,17 @@ function drawMatrix() {
 
 window.addEventListener("resize",resize);
 resize();
+
 setInterval(drawMatrix,40);
 
 
 // CLOCK
 
 function updateClock() {
+
     document.getElementById("clock").textContent =
         new Date().toLocaleTimeString("fi-FI");
+
 }
 
 setInterval(updateClock,1000);
@@ -378,8 +492,10 @@ updateClock();
 // NETWORK COUNTER
 
 setInterval(() => {
+
     document.getElementById("network").textContent =
-        Math.floor(500 + Math.random()*900);
+        Math.floor(500+Math.random()*900);
+
 },1000);
 
 
@@ -389,13 +505,18 @@ const output = document.getElementById("output");
 const input = document.getElementById("command");
 
 function print(text) {
+
     const line = document.createElement("div");
+
     line.textContent = "> " + text;
+
     output.appendChild(line);
+
     output.scrollTop = output.scrollHeight;
 }
 
 function runCommand() {
+
     const cmd = input.value.trim().toLowerCase();
 
     if(!cmd) return;
@@ -403,8 +524,9 @@ function runCommand() {
     print("root@matrix:~$ " + cmd);
 
     switch(cmd) {
+
         case "help":
-            print("COMMANDS: help, clear, status, scan, matrix, whoami, date");
+            print("COMMANDS: help, clear, status, scan, matrix, whoami, date, virus, bonzi");
             break;
 
         case "clear":
@@ -412,7 +534,7 @@ function runCommand() {
             break;
 
         case "status":
-            print("SYSTEM: ONLINE | SECURITY: ACTIVE");
+            print("SYSTEM ONLINE | SECURITY ACTIVE");
             break;
 
         case "scan":
@@ -431,6 +553,15 @@ function runCommand() {
             print(new Date().toString());
             break;
 
+        case "virus":
+            startVirus();
+            break;
+
+        case "bonzi":
+            bonziTalk("I GOT U LIL BRO GOOD LUCK :D");
+            print("BONZI BUDDY IS WATCHING YOU 💜");
+            break;
+
         default:
             print("UNKNOWN COMMAND: " + cmd);
             print("TYPE HELP FOR COMMANDS.");
@@ -439,32 +570,41 @@ function runCommand() {
     input.value = "";
 }
 
-input.addEventListener("keydown", e => {
+input.addEventListener("keydown",e => {
+
     if(e.key === "Enter") runCommand();
+
 });
 
 
-// SIMULATED SCAN
+// SYSTEM SCAN
 
 let scanning = false;
 
 function startScan() {
+
     if(scanning) return;
 
     scanning = true;
 
     let progress = 0;
 
-    document.getElementById("scan").textContent = "RUNNING";
+    document.getElementById("scan").textContent =
+        "RUNNING";
 
     const timer = setInterval(() => {
+
         progress += Math.floor(Math.random()*9)+2;
 
         if(progress >= 100) {
+
             progress = 100;
+
             clearInterval(timer);
 
-            document.getElementById("scan").textContent = "DONE";
+            document.getElementById("scan").textContent =
+                "DONE";
+
             document.getElementById("scanText").textContent =
                 "SIMULATED SCAN COMPLETE";
 
@@ -475,10 +615,155 @@ function startScan() {
             progress + "%";
 
         document.getElementById("scanText").textContent =
-            "SCANNING SYSTEM... " + progress + "%";
+            "SCANNING... " + progress + "%";
 
     },150);
 }
+
+
+// VIRUS PRANK
+
+let virusWindows = [];
+let virusActive = false;
+
+function startVirus() {
+
+    if(virusActive) {
+        print("VIRUS ALREADY RUNNING!");
+        return;
+    }
+
+    virusActive = true;
+    virusWindows = [];
+
+    function createVirusWindow() {
+
+        const win = document.createElement("div");
+
+        win.className = "virus-window";
+
+        const maxX = Math.max(0,window.innerWidth-270);
+        const maxY = Math.max(0,window.innerHeight-160);
+
+        win.style.left = Math.random()*maxX + "px";
+        win.style.top = Math.random()*maxY + "px";
+
+        win.innerHTML = `
+            <div class="virus-header">
+                <span>⚠ MATRIX VIRUS</span>
+                <span class="virus-close">✖</span>
+            </div>
+
+            <div class="virus-content">
+                I GOT U LIL BRO<br>
+                GOOD LUCK :D
+            </div>
+
+            <div class="virus-counter"></div>
+        `;
+
+        document.body.appendChild(win);
+
+        virusWindows.push(win);
+
+        updateVirusCounters();
+
+        win.querySelector(".virus-close").onclick = () => {
+
+            if(!virusWindows.includes(win)) return;
+
+            const count = virusWindows.length;
+
+            if(count >= 10) {
+
+                virusWindows.forEach(w => w.remove());
+
+                virusWindows = [];
+                virusActive = false;
+
+                print("VIRUS SELF-DESTRUCTED :D");
+
+                bonziTalk("HAHAHA! I GOT U LIL BRO!");
+
+                return;
+            }
+
+            win.remove();
+
+            virusWindows =
+                virusWindows.filter(w => w !== win);
+
+            for(let i=0; i<count*2; i++) {
+                createVirusWindow();
+            }
+        };
+    }
+
+    function updateVirusCounters() {
+
+        virusWindows.forEach((w,i) => {
+
+            w.querySelector(".virus-counter").textContent =
+                "WINDOW " + (i+1) + " / 10";
+
+        });
+    }
+
+    createVirusWindow();
+
+    print("VIRUS ACTIVATED :D");
+
+    bonziTalk("OH NO! WHAT HAVE YOU DONE?! XD");
+}
+
+
+// BONZI BUDDY
+
+const bonziMessages = [
+
+    "Hey there! I'm Bonzi! :D",
+    "I got u lil bro!",
+    "GOOD LUCK BRO XD",
+    "Welcome to the Matrix!",
+    "I'm watching you... 👀",
+    "Need some help?",
+    "01001000 01001001",
+    "HAHAHAHA!",
+    "You can't escape me!",
+    "Have a nice day! 💜",
+    "I AM YOUR NEW BEST FRIEND!",
+    "FOLLOW THE WHITE RABBIT!"
+
+];
+
+function bonziTalk(message) {
+
+    const bubble =
+        document.getElementById("bonziBubble");
+
+    bubble.textContent = message ||
+        bonziMessages[
+            Math.floor(Math.random()*bonziMessages.length)
+        ];
+}
+
+
+// BONZI RANDOM SPEECH
+
+setInterval(() => {
+
+    bonziTalk();
+
+},12000);
+
+
+// BONZI WELCOME
+
+setTimeout(() => {
+
+    bonziTalk("I GOT U LIL BRO :D");
+
+},3000);
 
 </script>
 
