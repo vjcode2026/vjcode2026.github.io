@@ -4,76 +4,372 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Matrix Ultimate System</title>
+<title>Matrix Ultimate</title>
+
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#000;color:#00ff66;font-family:monospace;overflow:hidden}
-#matrix{position:fixed;inset:0;z-index:0}
-#terminal{position:relative;z-index:2;width:min(850px,94vw);height:75vh;margin:5vh auto;padding:20px;background:#000e;border:1px solid #00ff66;box-shadow:0 0 25px #00ff6680;overflow:auto}
-#output{white-space:pre-wrap;line-height:1.5;overflow-wrap:anywhere}
-#commandLine{display:flex;gap:8px;margin-top:12px}
-#command{flex:1;min-width:0;background:transparent;border:0;outline:0;color:#00ff66;font:inherit;font-size:16px}
-#bonzi{position:fixed;z-index:20;right:18px;bottom:10px;text-align:center;cursor:pointer;filter:drop-shadow(0 0 12px #b000ff)}
-#bonziFace{font-size:60px;animation:bounce 2s infinite}
-#bonziBubble{max-width:220px;background:#6521a8;border:1px solid #d7a5ff;color:white;padding:9px;border-radius:12px;font-size:12px;margin-bottom:8px}
-@keyframes bounce{50%{transform:translateY(-9px)}}
-.virusWindow{position:fixed;z-index:30;width:230px;padding:12px;background:#160000;color:white;border:2px solid red;box-shadow:0 0 20px red;text-align:center;animation:shake .3s infinite}
-@keyframes shake{50%{transform:rotate(1deg)}}
-.virusWindow button{cursor:pointer}
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  overflow:hidden;
+  background:black;
+  color:#00ff66;
+  font-family:"Courier New",monospace;
+}
+
+#matrix {
+  position:fixed;
+  inset:0;
+  z-index:0;
+}
+
+#terminal {
+  position:relative;
+  z-index:2;
+  width:min(850px,92vw);
+  height:min(560px,75vh);
+  margin:7vh auto;
+  padding:22px;
+  background:rgba(0,0,0,.9);
+  border:1px solid #00ff66;
+  box-shadow:0 0 25px #00ff6680;
+  overflow-y:auto;
+}
+
+#output {
+  white-space:pre-wrap;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+
+#commandLine {
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+
+#command {
+  flex:1;
+  min-width:0;
+  background:transparent;
+  border:none;
+  outline:none;
+  color:#00ff66;
+  font:inherit;
+  font-size:16px;
+}
+
+.prompt { color:#00ff66; }
+
+/* BONZI */
+
+#bonzi {
+  position:fixed;
+  z-index:20;
+  right:20px;
+  bottom:15px;
+  text-align:center;
+  cursor:pointer;
+  filter:drop-shadow(0 0 12px #b000ff);
+  user-select:none;
+}
+
+#bonziFace {
+  font-size:60px;
+  animation:bounce 2s infinite ease-in-out;
+}
+
+#bonziBubble {
+  max-width:230px;
+  padding:10px;
+  margin-bottom:8px;
+  color:white;
+  background:#6521a8;
+  border:1px solid #d7a5ff;
+  border-radius:12px;
+  font-size:13px;
+  box-shadow:0 0 15px #a000ff;
+}
+
+@keyframes bounce {
+  0%,100% { transform:translateY(0); }
+  50% { transform:translateY(-9px); }
+}
+
+/* VIRUS WINDOWS */
+
+.virusWindow {
+  position:fixed;
+  z-index:30;
+  width:230px;
+  padding:12px;
+  color:white;
+  background:#160000;
+  border:2px solid red;
+  box-shadow:0 0 20px red;
+  text-align:center;
+  animation:shake .3s infinite;
+}
+
+.virusWindow button {
+  margin-top:10px;
+  padding:6px 12px;
+  cursor:pointer;
+}
+
+@keyframes shake {
+  0%,100% { transform:rotate(-1deg); }
+  50% { transform:rotate(1deg); }
+}
 
 /* WORM GAME */
-#gameOverlay{display:none;position:fixed;inset:0;z-index:10;overflow:auto;background:#000f;text-align:center;padding:12px}
-#gamePanel{width:min(950px,100%);margin:auto;border:1px solid #00ff66;padding:12px}
-#gameInfo{display:flex;justify-content:center;gap:15px;flex-wrap:wrap}
-#maze{display:grid;justify-content:center;width:max-content;max-width:100%;margin:12px auto;border:2px solid #00ff66}
-.cell{width:var(--cell-size);height:var(--cell-size);background:#061006}
-.wall{background:#00a83f}
-.player{background:white;border-radius:50%;box-shadow:0 0 8px white}
-.exit{background:#ffdf00}
-#gameMessage{min-height:24px}
-.gameButtons{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
-.gameButtons button,#mobileControls button{background:#001b08;color:#00ff66;border:1px solid #00ff66;padding:9px;cursor:pointer;font:inherit}
-#mobileControls{display:grid;grid-template-columns:repeat(3,48px);justify-content:center;gap:5px;margin:12px}
-#mobileControls button{font-size:20px}
-.empty{visibility:hidden}
 
-/* MINECRAFT */
-#mineOverlay{display:none;position:fixed;inset:0;z-index:15;background:#000}
-#mineCanvas{width:100%;height:100%;display:block}
-#mineHUD{position:absolute;inset:0;pointer-events:none;color:white;text-shadow:2px 2px 3px black}
-#mineTop{position:absolute;top:12px;left:0;right:0;text-align:center;font-size:14px}
-#mineHelp{position:absolute;top:42px;left:12px;font-size:12px;line-height:1.6}
-#crosshair{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:25px}
-#hotbar{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:4px;pointer-events:auto}
-.slot{width:54px;height:54px;background:#222b;border:2px solid #aaa;display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:11px}
-.slot.selected{border:3px solid white;background:#555c}
-.blockIcon{width:23px;height:23px;border:1px solid #aaa}
-#mineStart{position:absolute;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px}
-#mineStart h1{font-size:clamp(25px,5vw,55px);color:#65e65b;text-shadow:3px 3px #174d17}
-#mineStart button{padding:14px 25px;background:#438d32;border:3px solid #a2e58b;color:white;font:bold 18px monospace;cursor:pointer}
-#mineExit{position:absolute;top:10px;right:10px;pointer-events:auto;background:#700;color:white;border:1px solid white;padding:8px;cursor:pointer}
-#mineInventory{position:absolute;bottom:85px;left:50%;transform:translateX(-50%);text-align:center;font-size:12px}
-@media(max-width:600px){
- #terminal{height:70vh;padding:12px}
- #bonzi{right:5px}
- #bonziFace{font-size:45px}
- .slot{width:38px;height:44px}
- .blockIcon{width:18px;height:18px}
- #mineHelp{font-size:10px}
+#gameOverlay {
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:10;
+  padding:12px;
+  overflow:auto;
+  background:rgba(0,0,0,.97);
+  text-align:center;
+}
+
+#gamePanel {
+  width:min(950px,100%);
+  margin:10px auto;
+  padding:15px;
+  border:1px solid #00ff66;
+  box-shadow:0 0 20px #00ff6680;
+}
+
+#gameInfo {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:15px;
+  margin:12px;
+}
+
+#maze {
+  display:grid;
+  justify-content:center;
+  margin:12px auto;
+  width:max-content;
+  max-width:100%;
+  overflow:hidden;
+  border:2px solid #00ff66;
+}
+
+.cell {
+  width:var(--cell-size);
+  height:var(--cell-size);
+  background:#061006;
+}
+
+.wall { background:#00a83f; }
+.player { background:white; border-radius:50%; }
+.exit { background:#ffdf00; }
+
+#gameMessage {
+  min-height:25px;
+  margin:10px;
+  font-weight:bold;
+}
+
+.gameButtons {
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:8px;
+  margin:10px;
+}
+
+.gameButtons button,
+#mobileControls button {
+  padding:9px 15px;
+  color:#00ff66;
+  background:#001b08;
+  border:1px solid #00ff66;
+  font:inherit;
+  cursor:pointer;
+}
+
+#mobileControls {
+  display:grid;
+  grid-template-columns:repeat(3,48px);
+  justify-content:center;
+  gap:5px;
+  margin:12px auto;
+}
+
+#mobileControls button { min-height:42px; font-size:20px; }
+#mobileControls .empty { visibility:hidden; }
+
+/* 3D BLOCK WORLD */
+
+#mineOverlay {
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:15;
+  background:#87ceeb;
+  color:white;
+  overflow:hidden;
+}
+
+#mineCanvas {
+  position:absolute;
+  inset:0;
+}
+
+#mineCanvas canvas {
+  display:block;
+  width:100%;
+  height:100%;
+}
+
+#mineTop {
+  position:absolute;
+  top:12px;
+  left:12px;
+  right:12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+  pointer-events:none;
+  text-shadow:2px 2px 3px black;
+}
+
+#mineTop button {
+  pointer-events:auto;
+  color:white;
+  background:#222;
+  border:2px solid #aaa;
+  padding:9px 12px;
+  font:inherit;
+  cursor:pointer;
+}
+
+#mineHelp {
+  font-size:12px;
+  line-height:1.5;
+}
+
+#mineCrosshair {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  color:white;
+  font-size:28px;
+  text-shadow:1px 1px 3px black;
+  pointer-events:none;
+}
+
+#hotbar {
+  position:absolute;
+  bottom:18px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:4px;
+  padding:5px;
+  background:#222a;
+  border:2px solid #aaa;
+}
+
+.hotSlot {
+  width:52px;
+  height:52px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border:2px solid #777;
+  background:#555b;
+  color:white;
+  font-size:10px;
+  text-shadow:1px 1px 2px black;
+}
+
+.hotSlot.selected {
+  border:3px solid white;
+  background:#888b;
+}
+
+.hotColor {
+  width:23px;
+  height:23px;
+  border:1px solid #222;
+}
+
+#mineStart {
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+  text-align:center;
+  background:#0009;
+  text-shadow:2px 2px 3px black;
+}
+
+#mineStart h1 {
+  font-size:clamp(30px,7vw,60px);
+  margin:5px;
+}
+
+#mineStart button {
+  margin-top:20px;
+  padding:15px 25px;
+  background:#387d28;
+  border:3px solid #b4e18a;
+  color:white;
+  font-size:18px;
+  cursor:pointer;
+}
+
+#mineStatus {
+  position:absolute;
+  top:75px;
+  left:12px;
+  color:white;
+  text-shadow:1px 1px 3px black;
+  pointer-events:none;
+  font-size:13px;
+}
+
+@media(max-width:600px) {
+  #terminal {
+    height:72vh;
+    margin-top:4vh;
+    padding:14px;
+  }
+
+  #bonzi { right:8px; bottom:8px; }
+  #bonziFace { font-size:45px; }
+  #bonziBubble { max-width:160px; font-size:11px; }
+  .hotSlot { width:43px; height:46px; }
+  #mineHelp { font-size:10px; }
 }
 </style>
 </head>
+
 <body>
 
 <canvas id="matrix"></canvas>
 
 <div id="terminal">
-<div id="output">MATRIX ULTIMATE SYSTEM
------------------------------
+  <div id="output">MATRIX SYSTEM ULTIMATE
+--------------------------------
 Secure connection established.
 Welcome to the Matrix.
 
-Commands:
+Available commands:
 help
 scan
 network
@@ -84,469 +380,914 @@ clear
 about
 
 Type a command to continue.</div>
-<div id="commandLine">
-<span>root@matrix:~$</span>
-<input id="command" autocomplete="off" autofocus>
-</div>
+
+  <div id="commandLine">
+    <span class="prompt">root@matrix:~$</span>
+    <input id="command" autocomplete="off" autofocus>
+  </div>
 </div>
 
 <div id="bonzi" onclick="bonziTalk()">
-<div id="bonziBubble">Hello! I'm Bonzi Buddy. 😎</div>
-<div id="bonziFace">🦍</div>
+  <div id="bonziBubble">Hello! I'm Bonzi Buddy. 😎</div>
+  <div id="bonziFace">🦍</div>
 </div>
 
-<!-- WORM -->
+<!-- WORM GAME -->
+
 <div id="gameOverlay">
-<div id="gamePanel">
-<h2>🐛 MATRIX WORM MAZE</h2>
-<div id="gameInfo">
-<span>LEVEL: <b id="level">1</b></span>
-<span>MOVES: <b id="moves">0</b></span>
-<span>TIME: <b id="time">100</b>s</span>
-</div>
-<div id="gameMessage">Find the yellow exit!</div>
-<div id="maze"></div>
-<div id="mobileControls">
-<button class="empty"> </button><button onclick="move(0,-1)">▲</button><button class="empty"> </button>
-<button onclick="move(-1,0)">◀</button><button onclick="move(0,1)">▼</button><button onclick="move(1,0)">▶</button>
-</div>
-<div class="gameButtons">
-<button onclick="newGame()">NEW MAZE</button>
-<button onclick="closeGame()">EXIT GAME</button>
-</div>
-<p>WASD / nuolinäppäimet</p>
-</div>
+  <div id="gamePanel">
+    <h2>🐛 MATRIX WORM MAZE</h2>
+
+    <div id="gameInfo">
+      <span>LEVEL: <b id="level">1</b></span>
+      <span>MOVES: <b id="moves">0</b></span>
+      <span>TIME: <b id="time">100</b>s</span>
+    </div>
+
+    <div id="gameMessage">Find the yellow exit!</div>
+    <div id="maze"></div>
+
+    <div id="mobileControls">
+      <button class="empty"> </button>
+      <button onclick="moveWorm(0,-1)">▲</button>
+      <button class="empty"> </button>
+      <button onclick="moveWorm(-1,0)">◀</button>
+      <button onclick="moveWorm(0,1)">▼</button>
+      <button onclick="moveWorm(1,0)">▶</button>
+    </div>
+
+    <div class="gameButtons">
+      <button onclick="newWormGame()">NEW MAZE</button>
+      <button onclick="closeWormGame()">EXIT GAME</button>
+    </div>
+
+    <p>Use WASD or arrow keys to move.</p>
+  </div>
 </div>
 
-<!-- MINECRAFT -->
+<!-- MINE GAME -->
+
 <div id="mineOverlay">
-<canvas id="mineCanvas"></canvas>
-<div id="mineHUD">
-<button id="mineExit" onclick="closeMine()">EXIT GAME ✕</button>
-<div id="mineTop">MATRIX CRAFT | <span id="mineStatus">Survival mode</span></div>
-<div id="mineHelp">WASD = Move<br>SPACE = Jump<br>Mouse = Look<br>Left click = Break<br>Right click = Place<br>1–6 = Select block<br>ESC = Release mouse</div>
-<div id="crosshair">+</div>
-<div id="mineInventory"></div>
-<div id="hotbar"></div>
-</div>
-<div id="mineStart">
-<h1>⛏ MATRIX CRAFT</h1>
-<p>Explore the block world!</p>
-<p>Break blocks, collect resources and build.</p>
-<button id="startMine">PLAY GAME</button>
-<p style="font-size:12px">Click PLAY and then click the world to control it.</p>
-</div>
+  <div id="mineCanvas"></div>
+
+  <div id="mineTop">
+    <div id="mineHelp">
+      WASD: Move<br>
+      SPACE: Jump<br>
+      Mouse: Look<br>
+      Left click: Mine<br>
+      Right click: Place<br>
+      1–6: Select block
+    </div>
+
+    <button onclick="closeMine()">EXIT GAME ✕</button>
+  </div>
+
+  <div id="mineStatus">World loading...</div>
+  <div id="mineCrosshair">+</div>
+  <div id="hotbar"></div>
+
+  <div id="mineStart">
+    <h1>BLOCK WORLD</h1>
+    <p>A Minecraft-style 3D building adventure</p>
+    <p>Explore, mine blocks and build your own world!</p>
+    <button id="startMineButton">PLAY WORLD</button>
+    <p>Click PLAY WORLD to begin.</p>
+  </div>
 </div>
 
 <script>
 /* MATRIX RAIN */
-const matrixCanvas=document.getElementById("matrix");
-const mctx=matrixCanvas.getContext("2d");
-let drops=[];
-function resizeMatrix(){
- matrixCanvas.width=innerWidth;
- matrixCanvas.height=innerHeight;
- drops=Array(Math.floor(innerWidth/16)).fill(1);
+
+const matrixCanvas = document.getElementById("matrix");
+const matrixCtx = matrixCanvas.getContext("2d");
+const matrixFont = 16;
+let matrixDrops = [];
+
+function resizeMatrix() {
+  matrixCanvas.width = innerWidth;
+  matrixCanvas.height = innerHeight;
+  matrixDrops = Array(Math.floor(innerWidth / matrixFont)).fill(1);
 }
+
 resizeMatrix();
-addEventListener("resize",resizeMatrix);
-setInterval(()=>{
- mctx.fillStyle="rgba(0,0,0,.07)";
- mctx.fillRect(0,0,matrixCanvas.width,matrixCanvas.height);
- mctx.fillStyle="#00ff66";
- mctx.font="16px monospace";
- drops.forEach((y,i)=>{
-  mctx.fillText(String.fromCharCode(0x30A0+Math.random()*96),i*16,y*16);
-  if(y*16>matrixCanvas.height&&Math.random()>.975)drops[i]=0;
-  drops[i]++;
- });
+window.addEventListener("resize", resizeMatrix);
+
+setInterval(() => {
+  matrixCtx.fillStyle = "rgba(0,0,0,.07)";
+  matrixCtx.fillRect(0,0,matrixCanvas.width,matrixCanvas.height);
+  matrixCtx.fillStyle = "#00ff66";
+  matrixCtx.font = matrixFont + "px monospace";
+
+  for(let i=0;i<matrixDrops.length;i++) {
+    const char = String.fromCharCode(0x30A0 + Math.random()*96);
+    matrixCtx.fillText(char,i*matrixFont,matrixDrops[i]*matrixFont);
+
+    if(matrixDrops[i]*matrixFont > matrixCanvas.height && Math.random()>.975) {
+      matrixDrops[i]=0;
+    }
+    matrixDrops[i]++;
+  }
 },40);
 
 /* TERMINAL */
-const output=document.getElementById("output");
-const commandInput=document.getElementById("command");
-function print(t){
- output.textContent+="\n"+t;
- output.parentElement.scrollTop=output.parentElement.scrollHeight;
+
+const output = document.getElementById("output");
+const commandInput = document.getElementById("command");
+
+function print(text) {
+  output.textContent += "\n" + text;
+  output.parentElement.scrollTop = output.parentElement.scrollHeight;
 }
+
 commandInput.addEventListener("keydown",e=>{
- if(e.key==="Enter"){
-  const cmd=commandInput.value.trim().toLowerCase();
-  commandInput.value="";
-  if(!cmd)return;
-  print("\nroot@matrix:~$ "+cmd);
-  runCommand(cmd);
- }
+  if(e.key==="Enter") {
+    const command=commandInput.value.trim().toLowerCase();
+    commandInput.value="";
+    if(!command) return;
+    print("\nroot@matrix:~$ "+command);
+    runCommand(command);
+  }
 });
-function runCommand(cmd){
- switch(cmd){
-  case "help":print("help, scan, network, virus, worm, mine, clear, about");break;
-  case "scan":startScan();break;
-  case "network":print("NETWORK: ACTIVE\nConnected nodes: "+Math.floor(Math.random()*900+100));break;
-  case "virus":startVirus();break;
-  case "worm":openGame();break;
-  case "mine":openMine();break;
-  case "clear":output.textContent="MATRIX TERMINAL CLEARED.";break;
-  case "about":print("MATRIX ULTIMATE SYSTEM — browser simulation.");break;
-  default:print("Unknown command: "+cmd);
- }
+
+function runCommand(command) {
+  switch(command) {
+    case "help":
+      print("Commands: help, scan, network, virus, worm, mine, clear, about");
+      break;
+    case "scan":
+      startScan();
+      break;
+    case "network":
+      print("NETWORK: ACTIVE");
+      print("Connected nodes: "+Math.floor(Math.random()*900+100));
+      print("Encryption: AES-256");
+      break;
+    case "virus":
+      startVirus();
+      break;
+    case "worm":
+      openWormGame();
+      break;
+    case "mine":
+      openMine();
+      break;
+    case "clear":
+      output.textContent="MATRIX TERMINAL CLEARED.";
+      break;
+    case "about":
+      print("MATRIX ULTIMATE — browser simulation.");
+      break;
+    default:
+      print("Unknown command: "+command);
+  }
 }
-function startScan(){
- print("Starting simulated scan...");
- let n=0;
- const t=setInterval(()=>{
-  n+=10;print("Scanning... "+n+"%");
-  if(n>=100){clearInterval(t);print("SCAN COMPLETE.");}
- },250);
+
+function startScan() {
+  print("Starting simulated system scan...");
+  let count=0;
+  const interval=setInterval(()=>{
+    count+=10;
+    print("Scanning... "+count+"%");
+    if(count>=100) {
+      clearInterval(interval);
+      print("SCAN COMPLETE. No real files were changed.");
+    }
+  },250);
 }
 
 /* BONZI */
-const bonziMessages=[
- "I am watching you... 👀","Nice computer you have there!",
- "Have you tried Minecraft?","01001000 01001001",
- "You cannot escape the Matrix!","I know what you typed. 😈",
- "Click me if you dare!","ERROR 404: Banana not found 🍌"
+
+const bonziMessages = [
+  "I am watching you... 👀",
+  "Nice computer you have there!",
+  "Have you tried Minecraft?",
+  "01001000 01001001",
+  "You cannot escape the Matrix!",
+  "I know what you typed. 😈",
+  "Click me if you dare!",
+  "ERROR 404: Banana not found 🍌"
 ];
-function bonziTalk(){
- document.getElementById("bonziBubble").textContent=
- bonziMessages[Math.floor(Math.random()*bonziMessages.length)];
+
+function bonziTalk() {
+  document.getElementById("bonziBubble").textContent =
+    bonziMessages[Math.floor(Math.random()*bonziMessages.length)];
 }
-setInterval(()=>{if(Math.random()<.4)bonziTalk()},12000);
+
+setInterval(()=>{
+  if(Math.random()<.4) bonziTalk();
+},12000);
 
 /* VIRUS PRANK */
-let virusCount=0,virusWindows=[];
-function startVirus(){
- print("SIMULATED VIRUS STARTED!");
- print("I GOT YOU NOW LIL BRO :D.");
- virusCount=0;virusWindows.forEach(w=>w.remove());virusWindows=[];
- for(let i=0;i<4;i++)createVirusWindow();
+
+let virusCount=0;
+let virusWindows=[];
+
+function startVirus() {
+  print("WARNING: SIMULATED VIRUS PRANK STARTED!");
+  print("This is a harmless browser animation.");
+  virusCount=0;
+  virusWindows=[];
+  for(let i=0;i<4;i++) createVirusWindow();
 }
-function createVirusWindow(){
- if(virusCount>=40){clearVirusWindows();return;}
- virusCount++;
- const w=document.createElement("div");
- w.className="virusWindow";
- w.style.left=Math.random()*Math.max(10,innerWidth-250)+"px";
- w.style.top=Math.random()*Math.max(10,innerHeight-160)+"px";
- w.innerHTML="<h3>⚠ SYSTEM ALERT ⚠</h3><p>I GOT U LIL BRO</p><p>GOOD LUCK :D</p><button>Close</button>";
- w.querySelector("button").onclick=()=>{
-  w.remove();
-  virusWindows=virusWindows.filter(x=>x!==w);
-  if(virusCount>=40){clearVirusWindows();print("PRANK COMPLETE! YOU GOT PRANKED :D");}
-  else{createVirusWindow();createVirusWindow();}
- };
- document.body.appendChild(w);virusWindows.push(w);
+
+function createVirusWindow() {
+  if(virusCount>=10) {
+    clearVirusWindows();
+    return;
+  }
+
+  virusCount++;
+
+  const win=document.createElement("div");
+  win.className="virusWindow";
+  win.style.left=Math.random()*Math.max(10,innerWidth-250)+"px";
+  win.style.top=Math.random()*Math.max(10,innerHeight-160)+"px";
+
+  win.innerHTML=`
+    <h3>⚠ SYSTEM ALERT ⚠</h3>
+    <p>I GOT U LIL BRO</p>
+    <p>GOOD LUCK :D</p>
+    <button>Close</button>
+  `;
+
+  win.querySelector("button").onclick=()=>{
+    win.remove();
+    virusWindows=virusWindows.filter(item=>item!==win);
+
+    if(virusCount>=10) {
+      clearVirusWindows();
+      print("PRANK COMPLETE. YOU GOT PRANKED! :D");
+    } else {
+      createVirusWindow();
+      createVirusWindow();
+    }
+  };
+
+  document.body.appendChild(win);
+  virusWindows.push(win);
 }
-function clearVirusWindows(){virusWindows.forEach(w=>w.remove());virusWindows=[];}
+
+function clearVirusWindows() {
+  virusWindows.forEach(win=>win.remove());
+  virusWindows=[];
+}
 
 /* WORM MAZE */
+
 const gameOverlay=document.getElementById("gameOverlay");
 const mazeElement=document.getElementById("maze");
 const gameMessage=document.getElementById("gameMessage");
-let level=1,moves=0,time=100,player={x:1,y:1};
-let exitPoint={x:0,y:0},maze=[],mazeWidth=21,mazeHeight=15;
-let gameTimer=null,nextLevelTimer=null,gameRunning=false;
 
-function openGame(){gameOverlay.style.display="block";level=1;newGame();}
-function closeGame(){gameOverlay.style.display="none";stopGame();}
-function stopGame(){gameRunning=false;clearInterval(gameTimer);clearTimeout(nextLevelTimer);}
-function newGame(){
- stopGame();
- moves=0;time=Math.max(35,100-(level-1)*12);
- mazeWidth=Math.min(43,21+(level-1)*2);
- mazeHeight=Math.min(31,15+(level-1)*2);
- if(mazeWidth%2===0)mazeWidth++;
- if(mazeHeight%2===0)mazeHeight++;
- generateMaze();
- player={x:1,y:1};
- exitPoint={x:mazeWidth-2,y:mazeHeight-2};
- document.getElementById("level").textContent=level;
- document.getElementById("moves").textContent=moves;
- document.getElementById("time").textContent=time;
- gameMessage.textContent="Find the yellow exit!";
- gameRunning=true;renderMaze();
- gameTimer=setInterval(()=>{
-  if(!gameRunning)return;
-  time--;
-  document.getElementById("time").textContent=time;
-  if(time<=0){stopGame();gameMessage.textContent="TIME'S UP! Try NEW MAZE.";}
- },1000);
+let wormLevel=1;
+let wormMoves=0;
+let wormTime=100;
+let wormPlayer={x:1,y:1};
+let wormExit={x:0,y:0};
+let wormMaze=[];
+let wormWidth=21;
+let wormHeight=15;
+let wormTimer=null;
+let wormRunning=false;
+let wormNextTimer=null;
+
+function openWormGame() {
+  gameOverlay.style.display="block";
+  wormLevel=1;
+  newWormGame();
 }
-function generateMaze(){
- maze=Array.from({length:mazeHeight},()=>Array(mazeWidth).fill(1));
- const stack=[{x:1,y:1}];maze[1][1]=0;
- const dirs=[[0,-2],[0,2],[-2,0],[2,0]];
- while(stack.length){
-  const c=stack[stack.length-1];
-  const opts=dirs.map(([dx,dy])=>({x:c.x+dx,y:c.y+dy,dx,dy}))
-   .filter(p=>p.x>0&&p.x<mazeWidth-1&&p.y>0&&p.y<mazeHeight-1&&maze[p.y][p.x]===1);
-  if(!opts.length){stack.pop();continue;}
-  const n=opts[Math.floor(Math.random()*opts.length)];
-  maze[c.y+n.dy/2][c.x+n.dx/2]=0;
-  maze[n.y][n.x]=0;
-  stack.push({x:n.x,y:n.y});
- }
- maze[mazeHeight-2][mazeWidth-2]=0;
+
+function closeWormGame() {
+  gameOverlay.style.display="none";
+  stopWormGame();
 }
-function renderMaze(){
- mazeElement.innerHTML="";
- const size=Math.min(18,Math.max(5,Math.floor((innerWidth-40)/mazeWidth)));
- mazeElement.style.setProperty("--cell-size",size+"px");
- mazeElement.style.gridTemplateColumns=`repeat(${mazeWidth},var(--cell-size))`;
- for(let y=0;y<mazeHeight;y++)for(let x=0;x<mazeWidth;x++){
-  const cell=document.createElement("div");cell.className="cell";
-  if(maze[y][x]===1)cell.classList.add("wall");
-  if(x===player.x&&y===player.y)cell.classList.add("player");
-  if(x===exitPoint.x&&y===exitPoint.y)cell.classList.add("exit");
-  mazeElement.appendChild(cell);
- }
+
+function stopWormGame() {
+  wormRunning=false;
+  clearInterval(wormTimer);
+  clearTimeout(wormNextTimer);
 }
-function move(dx,dy){
- if(!gameRunning)return;
- const nx=player.x+dx,ny=player.y+dy;
- if(nx<0||nx>=mazeWidth||ny<0||ny>=mazeHeight||maze[ny][nx]===1)return;
- player.x=nx;player.y=ny;moves++;
- document.getElementById("moves").textContent=moves;
- if(nx===exitPoint.x&&ny===exitPoint.y){
-  stopGame();gameMessage.textContent="LEVEL COMPLETE! NEXT LEVEL...";
-  level++;
-  nextLevelTimer=setTimeout(()=>{if(gameOverlay.style.display==="block")newGame();},1800);
-  return;
- }
- renderMaze();
+
+function newWormGame() {
+  stopWormGame();
+  wormMoves=0;
+  wormTime=Math.max(35,100-(wormLevel-1)*12);
+
+  wormWidth=Math.min(43,21+(wormLevel-1)*2);
+  wormHeight=Math.min(31,15+(wormLevel-1)*2);
+
+  if(wormWidth%2===0) wormWidth++;
+  if(wormHeight%2===0) wormHeight++;
+
+  generateWormMaze();
+
+  wormPlayer={x:1,y:1};
+  wormExit={x:wormWidth-2,y:wormHeight-2};
+
+  document.getElementById("level").textContent=wormLevel;
+  document.getElementById("moves").textContent=wormMoves;
+  document.getElementById("time").textContent=wormTime;
+
+  gameMessage.textContent="Find the yellow exit!";
+  wormRunning=true;
+  renderWormMaze();
+
+  wormTimer=setInterval(()=>{
+    if(!wormRunning) return;
+    wormTime--;
+    document.getElementById("time").textContent=wormTime;
+
+    if(wormTime<=0) {
+      stopWormGame();
+      gameMessage.textContent="TIME'S UP! Try NEW MAZE.";
+    }
+  },1000);
 }
+
+function generateWormMaze() {
+  wormMaze=Array.from({length:wormHeight},()=>Array(wormWidth).fill(1));
+
+  const stack=[{x:1,y:1}];
+  wormMaze[1][1]=0;
+
+  const dirs=[[0,-2],[0,2],[-2,0],[2,0]];
+
+  while(stack.length) {
+    const current=stack[stack.length-1];
+
+    const options=dirs.map(([dx,dy])=>({
+      x:current.x+dx,
+      y:current.y+dy,
+      dx,dy
+    })).filter(p=>
+      p.x>0 && p.x<wormWidth-1 &&
+      p.y>0 && p.y<wormHeight-1 &&
+      wormMaze[p.y][p.x]===1
+    );
+
+    if(!options.length) {
+      stack.pop();
+      continue;
+    }
+
+    const next=options[Math.floor(Math.random()*options.length)];
+
+    wormMaze[current.y+next.dy/2][current.x+next.dx/2]=0;
+    wormMaze[next.y][next.x]=0;
+
+    stack.push({x:next.x,y:next.y});
+  }
+}
+
+function renderWormMaze() {
+  mazeElement.innerHTML="";
+  mazeElement.style.gridTemplateColumns=`repeat(${wormWidth},var(--cell-size))`;
+
+  const size=Math.min(18,Math.max(5,Math.floor((innerWidth-40)/wormWidth)));
+  mazeElement.style.setProperty("--cell-size",size+"px");
+
+  for(let y=0;y<wormHeight;y++) {
+    for(let x=0;x<wormWidth;x++) {
+      const cell=document.createElement("div");
+      cell.className="cell";
+
+      if(wormMaze[y][x]===1) cell.classList.add("wall");
+      if(x===wormPlayer.x && y===wormPlayer.y) cell.classList.add("player");
+      if(x===wormExit.x && y===wormExit.y) cell.classList.add("exit");
+
+      mazeElement.appendChild(cell);
+    }
+  }
+}
+
+function moveWorm(dx,dy) {
+  if(!wormRunning) return;
+
+  const nx=wormPlayer.x+dx;
+  const ny=wormPlayer.y+dy;
+
+  if(nx<0 || nx>=wormWidth || ny<0 || ny>=wormHeight || wormMaze[ny][nx]===1) return;
+
+  wormPlayer={x:nx,y:ny};
+  wormMoves++;
+
+  document.getElementById("moves").textContent=wormMoves;
+
+  if(nx===wormExit.x && ny===wormExit.y) {
+    stopWormGame();
+    gameMessage.textContent="LEVEL COMPLETE! NEXT LEVEL...";
+    wormLevel++;
+
+    wormNextTimer=setTimeout(()=>{
+      if(gameOverlay.style.display==="block") newWormGame();
+    },1800);
+    return;
+  }
+
+  renderWormMaze();
+}
+
 document.addEventListener("keydown",e=>{
- if(gameOverlay.style.display!=="block")return;
- const keys={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]};
- const dir=keys[e.key]||keys[e.key.toLowerCase()];
- if(dir){e.preventDefault();move(...dir);}
+  if(gameOverlay.style.display!=="block") return;
+
+  const keys={
+    ArrowUp:[0,-1],
+    ArrowDown:[0,1],
+    ArrowLeft:[-1,0],
+    ArrowRight:[1,0],
+    w:[0,-1],
+    s:[0,1],
+    a:[-1,0],
+    d:[1,0]
+  };
+
+  const direction=keys[e.key] || keys[e.key.toLowerCase()];
+
+  if(direction) {
+    e.preventDefault();
+    moveWorm(direction[0],direction[1]);
+  }
 });
 
-/* MATRIX CRAFT - THREE.JS */
-let THREE=null,scene,camera,renderer,controls;
-let mineStarted=false,mineAnimation=null;
-let blocks=[],blockMeshes=[],inventory={grass:20,dirt:20,stone:20,wood:10,sand:10,leaves:10};
-let selectedBlock="grass";
+/* ==================================================
+   3D BLOCK WORLD
+   ================================================== */
+
+let THREE=null;
+let scene=null;
+let camera=null;
+let renderer=null;
+let raycaster=null;
+
+let mineStarted=false;
+let mineActive=false;
+let blocks=[];
+let blockMap=new Map();
 let keysDown={};
-let velocityY=0,onGround=false;
-const blockTypes={
- grass:{color:0x55aa35,label:"Grass"},
- dirt:{color:0x87502b,label:"Dirt"},
- stone:{color:0x888888,label:"Stone"},
- wood:{color:0x99602c,label:"Wood"},
- sand:{color:0xdcc77b,label:"Sand"},
- leaves:{color:0x26752a,label:"Leaves"}
-};
+
+let yaw=0;
+let pitch=0;
+let verticalVelocity=0;
+let grounded=false;
+let lastFrame=0;
+
+let selectedBlock=0;
+let inventory=[Infinity,20,20,20,20,20];
+
 const mineOverlay=document.getElementById("mineOverlay");
-const mineStart=document.getElementById("mineStart");
 const mineCanvas=document.getElementById("mineCanvas");
+const mineStart=document.getElementById("mineStart");
+const mineStatus=document.getElementById("mineStatus");
+const hotbar=document.getElementById("hotbar");
 
-async function openMine(){
- mineOverlay.style.display="block";
- document.getElementById("mineStatus").textContent="Loading world...";
- if(!THREE){
-  try{
-   THREE=await import("https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js");
-  }catch(e){
-   document.getElementById("mineStatus").textContent="Could not load Three.js. Check internet connection.";
-   return;
+const BLOCKS=[
+  {name:"Grass",color:0x55aa35},
+  {name:"Dirt",color:0x87512d},
+  {name:"Stone",color:0x888888},
+  {name:"Wood",color:0x9b652f},
+  {name:"Leaves",color:0x247c29},
+  {name:"Sand",color:0xd9c27a}
+];
+
+function blockKey(x,y,z) {
+  return `${x},${y},${z}`;
+}
+
+function setMineStatus(text) {
+  mineStatus.textContent=text;
+}
+
+function updateHotbar() {
+  hotbar.innerHTML="";
+
+  BLOCKS.forEach((block,i)=>{
+    const slot=document.createElement("div");
+    slot.className="hotSlot"+(selectedBlock===i?" selected":"");
+
+    const color=document.createElement("div");
+    color.className="hotColor";
+    color.style.background="#"+block.color.toString(16).padStart(6,"0");
+
+    slot.appendChild(color);
+    slot.append(`${i+1}: ${block.name} ${inventory[i]===Infinity?"∞":inventory[i]}`);
+
+    hotbar.appendChild(slot);
+  });
+}
+
+async function openMine() {
+  mineOverlay.style.display="block";
+  mineStart.style.display="flex";
+  setMineStatus("Loading 3D world...");
+
+  try {
+    if(!THREE) {
+      THREE=await import(
+        "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+      );
+    }
+
+    if(!scene) initializeMine();
+
+    mineStart.style.display="flex";
+    setMineStatus("World ready! Press PLAY WORLD.");
+  } catch(error) {
+    console.error(error);
+    setMineStatus("3D loading error: "+error.message);
+
+    mineStart.innerHTML=`
+      <h1>WORLD LOADING ERROR</h1>
+      <p>Could not load the 3D engine.</p>
+      <p>Check your internet connection.</p>
+      <button onclick="closeMine()">EXIT</button>
+    `;
   }
- }
- if(!renderer)setupMine();
- mineStart.style.display="flex";
- document.getElementById("mineStatus").textContent="World ready";
 }
 
-function closeMine(){
- mineOverlay.style.display="none";
- mineStarted=false;
- if(controls&&controls.isLocked)controls.unlock();
- if(mineAnimation)cancelAnimationFrame(mineAnimation);
+function initializeMine() {
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x87ceeb);
+  scene.fog=new THREE.Fog(0x87ceeb,25,75);
+
+  camera=new THREE.PerspectiveCamera(
+    75,
+    innerWidth/innerHeight,
+    0.1,
+    1000
+  );
+
+  camera.position.set(0,8,8);
+
+  renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.setSize(innerWidth,innerHeight);
+
+  mineCanvas.innerHTML="";
+  mineCanvas.appendChild(renderer.domElement);
+
+  scene.add(new THREE.HemisphereLight(0xffffff,0x526044,2));
+
+  const sun=new THREE.DirectionalLight(0xffffff,2);
+  sun.position.set(20,35,10);
+  scene.add(sun);
+
+  raycaster=new THREE.Raycaster();
+  raycaster.far=7;
+
+  BLOCKS.forEach(block=>{
+    block.material=new THREE.MeshLambertMaterial({color:block.color});
+  });
+
+  generateBlockWorld();
+  updateHotbar();
+
+  renderer.domElement.addEventListener("click",()=>{
+    if(mineStarted && !document.pointerLockElement) {
+      renderer.domElement.requestPointerLock?.();
+    }
+  });
+
+  renderer.domElement.addEventListener("contextmenu",e=>e.preventDefault());
+
+  document.addEventListener("mousemove",mineMouseMove);
+  document.addEventListener("mousedown",mineMouseClick);
+
+  document.addEventListener("pointerlockchange",()=>{
+    mineActive=document.pointerLockElement===renderer.domElement;
+  });
+
+  document.addEventListener("keydown",mineKeyDown);
+
+  document.addEventListener("keyup",e=>{
+    keysDown[e.key.toLowerCase()]=false;
+  });
+
+  window.addEventListener("resize",resizeMine);
+
+  animateMine();
 }
 
-function setupMine(){
- scene=new THREE.Scene();
- scene.background=new THREE.Color(0x87ceeb);
- scene.fog=new THREE.Fog(0x87ceeb,20,65);
+function addBlock(x,y,z,type) {
+  const key=blockKey(x,y,z);
+  if(blockMap.has(key)) return;
 
- camera=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,0.1,1000);
- camera.position.set(0,5,8);
+  const mesh=new THREE.Mesh(
+    new THREE.BoxGeometry(1,1,1),
+    BLOCKS[type].material
+  );
 
- renderer=new THREE.WebGLRenderer({canvas:mineCanvas,antialias:true});
- renderer.setPixelRatio(Math.min(devicePixelRatio,2));
- renderer.setSize(innerWidth,innerHeight);
+  mesh.position.set(x,y,z);
+  mesh.userData={x,y,z,type};
 
- const ambient=new THREE.HemisphereLight(0xffffff,0x556644,2);
- scene.add(ambient);
- const sun=new THREE.DirectionalLight(0xffffff,2);
- sun.position.set(20,40,15);scene.add(sun);
+  mesh.castShadow=true;
+  mesh.receiveShadow=true;
 
- controls=new THREE.PointerLockControls(camera,mineCanvas);
- scene.add(controls.getObject());
+  scene.add(mesh);
+  blocks.push(mesh);
+  blockMap.set(key,mesh);
+}
 
- window.addEventListener("resize",()=>{
-  if(!renderer)return;
+function removeBlock(mesh) {
+  if(!mesh) return;
+
+  const {x,y,z,type}=mesh.userData;
+
+  scene.remove(mesh);
+  mesh.geometry.dispose();
+
+  blockMap.delete(blockKey(x,y,z));
+  blocks=blocks.filter(b=>b!==mesh);
+
+  if(inventory[type]!==Infinity) inventory[type]++;
+
+  updateHotbar();
+}
+
+function generateBlockWorld() {
+  blocks.forEach(block=>{
+    scene.remove(block);
+    block.geometry.dispose();
+  });
+
+  blocks=[];
+  blockMap.clear();
+
+  const size=30;
+
+  for(let x=-size/2;x<size/2;x++) {
+    for(let z=-size/2;z<size/2;z++) {
+
+      const hills=
+        Math.sin(x*.35)*.8+
+        Math.cos(z*.3)*.7+
+        Math.sin((x+z)*.2)*.5;
+
+      const height=Math.max(1,Math.floor(2+hills));
+
+      for(let y=0;y<height;y++) {
+        let type=1;
+
+        if(y===height-1) type=0;
+        if(y===0) type=2;
+
+        addBlock(x,y,z,type);
+      }
+
+      if(Math.random()<.035 && Math.abs(x)>3 && Math.abs(z)>3) {
+        for(let y=height;y<height+4;y++) {
+          addBlock(x,y,z,3);
+        }
+
+        for(let dx=-2;dx<=2;dx++) {
+          for(let dz=-2;dz<=2;dz++) {
+            for(let dy=2;dy<=4;dy++) {
+              if(Math.abs(dx)+Math.abs(dz)+Math.abs(dy-3)<5) {
+                addBlock(x+dx,height+dy,z+dz,4);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Small sand area
+  for(let x=8;x<13;x++) {
+    for(let z=-7;z<-3;z++) {
+      const old=blockMap.get(blockKey(x,1,z));
+
+      if(old) {
+        scene.remove(old);
+        old.geometry.dispose();
+        blockMap.delete(blockKey(x,1,z));
+        blocks=blocks.filter(b=>b!==old);
+      }
+
+      addBlock(x,1,z,5);
+    }
+  }
+
+  camera.position.set(0,8,8);
+}
+
+function startMineGame() {
+  if(!renderer) return;
+
+  mineStarted=true;
+  mineStart.style.display="none";
+
+  renderer.domElement.requestPointerLock?.();
+
+  setMineStatus("Welcome to Block World!");
+}
+
+document.getElementById("startMineButton").onclick=startMineGame;
+
+function closeMine() {
+  mineStarted=false;
+  mineActive=false;
+  keysDown={};
+
+  mineOverlay.style.display="none";
+
+  if(document.pointerLockElement) {
+    document.exitPointerLock();
+  }
+}
+
+function resizeMine() {
+  if(!renderer || !camera) return;
+
   camera.aspect=innerWidth/innerHeight;
   camera.updateProjectionMatrix();
+
   renderer.setSize(innerWidth,innerHeight);
- });
-
- createWorld();
- buildHotbar();
 }
 
-function createWorld(){
- blocks.forEach(b=>scene.remove(b.mesh));
- blocks=[];blockMeshes=[];
- const size=40;
- const heightMap=[];
- for(let x=-size/2;x<size/2;x++){
-  heightMap[x+size/2]=[];
-  for(let z=-size/2;z<size/2;z++){
-   const h=Math.floor(2+Math.sin(x*.25)*1.4+Math.cos(z*.22)*1.3+Math.random()*.8);
-   heightMap[x+size/2][z+size/2]=h;
-   for(let y=0;y<=h;y++){
-    let type=y===h?"grass":y>=h-2?"dirt":"stone";
-    addBlock(x,y,z,type);
-   }
-   if(Math.random()<.035&&h>=2)createTree(x,h+1,z);
+function mineMouseMove(e) {
+  if(!mineActive || !mineStarted) return;
+
+  yaw-=e.movementX*.002;
+  pitch-=e.movementY*.002;
+
+  pitch=Math.max(-1.5,Math.min(1.5,pitch));
+}
+
+function mineKeyDown(e) {
+  if(!mineStarted || mineOverlay.style.display!=="block") return;
+
+  const key=e.key.toLowerCase();
+  keysDown[key]=true;
+
+  if(["w","a","s","d"," ","arrowup","arrowdown","arrowleft","arrowright"].includes(key)) {
+    e.preventDefault();
   }
- }
- camera.position.set(0,8,8);
-}
 
-function addBlock(x,y,z,type){
- const geometry=new THREE.BoxGeometry(1,1,1);
- const material=new THREE.MeshLambertMaterial({color:blockTypes[type].color});
- const mesh=new THREE.Mesh(geometry,material);
- mesh.position.set(x,y,z);
- mesh.userData={type,x,y,z};
- scene.add(mesh);
- const item={mesh,type,x,y,z};
- blocks.push(item);blockMeshes.push(mesh);
- return item;
-}
-
-function createTree(x,y,z){
- for(let i=0;i<3;i++)addBlock(x,y+i,z,"wood");
- for(let dx=-1;dx<=1;dx++)for(let dz=-1;dz<=1;dz++){
-  for(let dy=2;dy<=3;dy++){
-   if(Math.random()>.15)addBlock(x+dx,y+dy,z+dz,"leaves");
+  if(key>="1" && key<="6") {
+    selectedBlock=Number(key)-1;
+    updateHotbar();
   }
- }
- addBlock(x,y+4,z,"leaves");
+
+  if(key===" " && grounded && mineActive) {
+    verticalVelocity=8;
+    grounded=false;
+  }
 }
 
-function buildHotbar(){
- const bar=document.getElementById("hotbar");
- bar.innerHTML="";
- Object.keys(blockTypes).forEach((type,i)=>{
-  const slot=document.createElement("div");
-  slot.className="slot"+(type===selectedBlock?" selected":"");
-  slot.innerHTML=`<div class="blockIcon" style="background:#${blockTypes[type].color.toString(16).padStart(6,"0")}"></div><span>${i+1}: ${inventory[type]}</span>`;
-  slot.onclick=()=>selectBlock(type);
-  bar.appendChild(slot);
- });
- updateInventory();
+function mineMouseClick(e) {
+  if(!mineActive || !mineStarted) return;
+  if(e.button!==0 && e.button!==2) return;
+
+  raycaster.setFromCamera(new THREE.Vector2(0,0),camera);
+
+  const hits=raycaster.intersectObjects(blocks,false);
+  if(!hits.length) return;
+
+  const hit=hits[0];
+  const mesh=hit.object;
+
+  if(e.button===0) {
+    if(mesh.userData.y<=0) {
+      setMineStatus("You cannot dig below the world!");
+      return;
+    }
+
+    const name=BLOCKS[mesh.userData.type].name;
+    removeBlock(mesh);
+    setMineStatus("Mined: "+name);
+  }
+
+  if(e.button===2) {
+    const normal=hit.face.normal.clone();
+    const position=mesh.position.clone().add(normal);
+
+    const x=Math.round(position.x);
+    const y=Math.round(position.y);
+    const z=Math.round(position.z);
+
+    if(blockMap.has(blockKey(x,y,z))) return;
+
+    if(inventory[selectedBlock]===0) {
+      setMineStatus("You have no more blocks!");
+      return;
+    }
+
+    const playerBox={
+      minX:camera.position.x-.35,
+      maxX:camera.position.x+.35,
+      minY:camera.position.y-1.7,
+      maxY:camera.position.y-.1,
+      minZ:camera.position.z-.35,
+      maxZ:camera.position.z+.35
+    };
+
+    if(
+      x+.5>playerBox.minX &&
+      x-.5<playerBox.maxX &&
+      y+.5>playerBox.minY &&
+      y-.5<playerBox.maxY &&
+      z+.5>playerBox.minZ &&
+      z-.5<playerBox.maxZ
+    ) return;
+
+    addBlock(x,y,z,selectedBlock);
+
+    if(inventory[selectedBlock]!==Infinity) {
+      inventory[selectedBlock]--;
+    }
+
+    updateHotbar();
+    setMineStatus("Placed: "+BLOCKS[selectedBlock].name);
+  }
 }
-function selectBlock(type){
- selectedBlock=type;buildHotbar();
-}
-function updateInventory(){
- const text=Object.keys(inventory).map(t=>blockTypes[t].label+": "+inventory[t]).join(" | ");
- document.getElementById("mineInventory").textContent=text;
-}
 
-/* Start game */
-document.getElementById("startMine").onclick=()=>{
- mineStarted=true;
- mineStart.style.display="none";
- controls.lock();
- animateMine();
-};
+function collidesAt(x,y,z) {
+  const radius=.28;
+  const bottom=y-1.7;
+  const top=y-.1;
 
-function animateMine(){
- if(!mineStarted)return;
- mineAnimation=requestAnimationFrame(animateMine);
- updateMineMovement();
- renderer.render(scene,camera);
-}
+  for(let bx=Math.floor(x-radius);bx<=Math.ceil(x+radius);bx++) {
+    for(let bz=Math.floor(z-radius);bz<=Math.ceil(z+radius);bz++) {
+      for(let by=Math.floor(bottom);by<=Math.ceil(top);by++) {
+        if(blockMap.has(blockKey(bx,by,bz))) {
+          const overlapX=Math.abs(x-bx)<.78;
+          const overlapZ=Math.abs(z-bz)<.78;
+          const overlapY=top>by-.5 && bottom<by+.5;
 
-function updateMineMovement(){
- if(!mineStarted)return;
- const speed=.12;
- if(keysDown.w||keysDown.ArrowUp)controls.moveForward(speed);
- if(keysDown.s||keysDown.ArrowDown)controls.moveForward(-speed);
- if(keysDown.a||keysDown.ArrowLeft)controls.moveRight(-speed);
- if(keysDown.d||keysDown.ArrowRight)controls.moveRight(speed);
+          if(overlapX && overlapZ && overlapY) return true;
+        }
+      }
+    }
+  }
 
- // Basic gravity and jumping
- const pos=controls.getObject().position;
- velocityY-=.012;
- pos.y+=velocityY;
- if(pos.y<3){pos.y=3;velocityY=0;onGround=true;}
+  return false;
 }
 
-document.addEventListener("keydown",e=>{
- if(mineOverlay.style.display!=="block")return;
- keysDown[e.key]=true;
- if(e.code==="Space"&&onGround&&mineStarted){
-  velocityY=.22;onGround=false;
- }
- if("123456".includes(e.key)){
-  const types=Object.keys(blockTypes);
-  selectBlock(types[Number(e.key)-1]);
- }
-});
-document.addEventListener("keyup",e=>{keysDown[e.key]=false;});
+function animateMine(now=0) {
+  requestAnimationFrame(animateMine);
 
-/* Block interaction */
-const raycaster=new THREE.Raycaster();
-const center=new THREE.Vector2(0,0);
+  if(!renderer || !scene || !camera) return;
 
-mineCanvas.addEventListener("contextmenu",e=>e.preventDefault());
-mineCanvas.addEventListener("mousedown",e=>{
- if(!mineStarted||!controls.isLocked)return;
- raycaster.setFromCamera(center,camera);
- const hits=raycaster.intersectObjects(blockMeshes,false);
- if(!hits.length)return;
- const hit=hits[0];
- const mesh=hit.object;
- const data=mesh.userData;
+  const dt=Math.min((now-lastFrame)/1000,.05);
+  lastFrame=now;
 
- if(e.button===0){
-  // Break block, but don't remove the floor below the player.
-  if(data.y===0)return;
-  scene.remove(mesh);
-  blocks=blocks.filter(b=>b.mesh!==mesh);
-  blockMeshes=blocks.map(b=>b.mesh);
-  inventory[data.type]=(inventory[data.type]||0)+1;
-  buildHotbar();
- }
- if(e.button===2){
-  if(inventory[selectedBlock]<=0)return;
-  const normal=hit.face.normal;
-  const p=mesh.position.clone().add(normal);
-  const key=blocks.some(b=>b.x===p.x&&b.y===p.y&&b.z===p.z);
-  if(key)return;
-  // Avoid placing a block inside the player.
-  const playerPos=controls.getObject().position;
-  if(Math.abs(p.x-playerPos.x)<.8&&Math.abs(p.z-playerPos.z)<.8&&Math.abs(p.y+0.5-playerPos.y)<1.8)return;
-  addBlock(p.x,p.y,p.z,selectedBlock);
-  inventory[selectedBlock]--;
-  buildHotbar();
- }
-});
+  if(mineStarted && mineActive) {
+    camera.rotation.order="YXZ";
+    camera.rotation.y=yaw;
+    camera.rotation.x=pitch;
 
-/* Unlocking mouse shows start overlay again */
-controls && (controls.addEventListener("unlock",()=>{
- if(mineStarted){
-  mineStarted=false;
-  mineStart.style.display="flex";
-  document.getElementById("mineStatus").textContent="Paused";
- }
-}));
+    const forward=new THREE.Vector3(
+      -Math.sin(yaw),0,-Math.cos(yaw)
+    );
 
+    const right=new THREE.Vector3(
+      Math.cos(yaw),0,-Math.sin(yaw)
+    );
+
+    const direction=new THREE.Vector3();
+
+    if(keysDown.w) direction.add(forward);
+    if(keysDown.s) direction.sub(forward);
+    if(keysDown.d) direction.add(right);
+    if(keysDown.a) direction.sub(right);
+
+    if(direction.lengthSq()>0) {
+      direction.normalize();
+
+      const speed=5.5*dt;
+      const nextX=camera.position.x+direction.x*speed;
+      const nextZ=camera.position.z+direction.z*speed;
+
+      if(!collidesAt(nextX,camera.position.y,camera.position.z)) {
+        camera.position.x=nextX;
+      }
+
+      if(!collidesAt(camera.position.x,camera.position.y,nextZ)) {
+        camera.position.z=nextZ;
+      }
+    }
+
+    verticalVelocity-=20*dt;
+    const nextY=camera.position.y+verticalVelocity*dt;
+
+    if(!collidesAt(camera.position.x,nextY,camera.position.z)) {
+      camera.position.y=nextY;
+      grounded=false;
+    } else {
+      if(verticalVelocity<0) grounded=true;
+      verticalVelocity=0;
+    }
+
+    if(camera.position.y<-15) {
+      camera.position.set(0,8,8);
+      verticalVelocity=0;
+      setMineStatus("Respawned!");
+    }
+  }
+
+  renderer.render(scene,camera);
+}
 </script>
+
 </body>
 </html>
